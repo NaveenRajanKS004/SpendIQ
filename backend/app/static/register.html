@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SpendIQ Register</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-body">
+
+<div class="login-container">
+    <h1>Create Account</h1>
+
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="register()">Sign Up</button>
+
+    <p id="error" class="error"></p>
+    <p style="margin-top:15px;">
+        Already have an account?
+        <a href="/login-page">Login</a>
+    </p>
+</div>
+
+<script>
+async function register() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const response = await fetch("/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+        alert("Account created successfully!");
+        window.location.href = "/login-page";
+    } else {
+        document.getElementById("error").innerText =
+            data.detail || "Registration failed";
+    }
+}
+</script>
+
+</body>
+</html>

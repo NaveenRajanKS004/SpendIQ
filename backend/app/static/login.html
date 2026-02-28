@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SpendIQ Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-body">
+
+<div class="login-container">
+    <h1>SpendIQ</h1>
+    <p>Smart Financial Analyzer</p>
+
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="error" class="error"></p>
+    <p style="margin-top:15px;">
+    Don't have an account?
+    <a href="/register-page">Sign Up</a>
+</p>
+</div>
+
+<script>
+async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const formData = new URLSearchParams();
+    formData.append("username", email);
+    formData.append("password", password);
+
+    const response = await fetch("/login", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+        localStorage.setItem("token", data.access_token);
+        window.location.href = "/dashboard";
+    } else {
+        document.getElementById("error").innerText = "Invalid credentials";
+    }
+}
+</script>
+
+</body>
+</html>

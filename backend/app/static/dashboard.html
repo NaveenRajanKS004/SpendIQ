@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SpendIQ Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header-bar">
+    <div>
+        <h1 class="main-title">SpendIQ</h1>
+        <p class="subtitle">AI-powered personal finance tracking</p>
+    </div>
+    <div class="header-actions">
+        <span class="demo-badge">● Live Demo</span>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+    <!-- Summary Cards -->
+    <div class="cards">
+        <div class="card income">
+            <h3>Total Income</h3>
+            <p id="income">₹0</p>
+        </div>
+
+        <div class="card expense">
+            <h3>Total Expense</h3>
+            <p id="expense">₹0</p>
+        </div>
+
+        <div class="card balance">
+            <h3>Balance</h3>
+            <p id="balance">₹0</p>
+        </div>
+    </div>
+
+    <!-- Insight Cards -->
+    <div class="cards insight-cards">
+        <div class="card" style="background:#ffffff; color:#1f2937;">
+            <h4>Total Transactions</h4>
+            <p id="totalTransactions">0</p>
+        </div>
+
+        <div class="card" style="background:#ffffff; color:#1f2937;">
+            <h4>Top Spending Category</h4>
+            <p id="topCategory">-</p>
+        </div>
+
+        <div class="card" style="background:#ffffff; color:#1f2937;">
+            <h4>Highest Expense</h4>
+            <p id="highestExpense">₹0</p>
+        </div>
+    </div>
+
+    <!-- Transactions Header + Upload -->
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap;">
+        <h2>Transactions</h2>
+
+        <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search transactions..."
+            style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; min-width:250px;"
+        >
+
+        <div>
+            <input type="file" id="csvFile" accept=".csv" style="display:none;">
+            <button id="uploadBtn">Upload CSV</button>
+        </div>
+    </div>
+
+    <!-- Empty Message -->
+    <p id="emptyMessage" style="display:none; text-align:center; margin:20px 0; font-weight:500; color:#6c757d;">
+        No transactions found. Upload a CSV file to get started.
+    </p>
+
+    <!-- Transactions Table -->
+    <table id="transactionTable">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th id="amountHeader" style="cursor:pointer;">Amount ⬍</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
+
+    <!-- Charts Section -->
+    <div style="margin-top:40px;">
+
+        <!-- Charts Wrapper -->
+        <div style="display:flex; gap:30px; flex-wrap:wrap;">
+
+            <!-- Pie Chart -->
+            <div class="chart-card">
+                <h3>Category Breakdown</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="chart-card">
+                <h3>Monthly Overview</h3>
+                <canvas id="monthlyChart"></canvas>
+            </div>
+
+        </div>
+
+        <!-- AI Insight BELOW charts -->
+        <div class="insight-box" style="margin-top:30px;">
+            <h2>AI Insight</h2>
+            <p id="aiInsight">Analyzing your spending patterns...</p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Load app.js -->
+<script src="/static/app.js"></script>
+
+</body>
+</html>
