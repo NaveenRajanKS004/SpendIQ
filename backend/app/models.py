@@ -40,3 +40,16 @@ class Transaction(Base):
 
     # Many transactions -> One user
     user = relationship("User", back_populates="transactions")
+
+class Budget(Base):
+    __tablename__ = "budgets"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    category = Column(String, nullable=False)
+
+    amount = Column(Float, nullable=False)
+
+    month = Column(String, nullable=False)  # format YYYY-MM
+
+    user_id = Column(Integer, ForeignKey("users.id"))

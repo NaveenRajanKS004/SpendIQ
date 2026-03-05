@@ -64,3 +64,22 @@ class TransactionResponse(BaseModel):
 
 class CategoryCorrection(BaseModel):
     category: AllowedCategory
+
+# =========================
+# BUDGET SCHEMA
+# =========================
+
+class BudgetCreate(BaseModel):
+    category: str
+    amount: float
+    month: str
+
+
+class BudgetResponse(BaseModel):
+    id: int
+    category: str
+    amount: float
+    month: str
+
+    class Config:
+        orm_mode = True

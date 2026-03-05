@@ -3,7 +3,7 @@ import os
 from fastapi import UploadFile, File
 import csv
 from io import StringIO
-from typing import List
+from typing import List, Optional
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -148,13 +148,11 @@ def get_current_user(
 def predict_category(description: str):
     description_lower = description.lower()
 
-    # 🔹 Rule Layer
     for category, keywords in RULE_KEYWORDS.items():
         for keyword in keywords:
             if keyword in description_lower:
                 return category
 
-    # 🔹 ML Layer
     if not ml_model:
         return "Uncategorized"
 
@@ -204,33 +202,19 @@ def login(
     ).first()
 
     if not db_user:
-        raise HTTPException(
-            status_code=400,
-            detail="Incorrect email or password"
-        )
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
 
-    if not verify_password(
-        form_data.password,
-        db_user.hashed_password
-    ):
-        raise HTTPException(
-            status_code=400,
-            detail="Incorrect email or password"
-        )
+    if not verify_password(form_data.password, db_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
 
-    access_token_expires = timedelta(
-        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     access_token = create_access_token(
         data={"sub": str(db_user.id)},
         expires_delta=access_token_expires,
     )
 
-    return {
-        "access_token": access_token,
-        "token_type": "bearer"
-    }
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/me", response_model=schemas.UserResponse)
 def read_current_user(
@@ -264,12 +248,36 @@ def create_transaction(
 
 @app.get("/transactions", response_model=List[schemas.TransactionResponse])
 def get_transactions(
+    month: Optional[str] = None,
+    category: Optional[str] = None,
+    txn_type: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    return db.query(models.Transaction).filter(
+
+    query = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id
-    ).all()
+    )
+
+    if month:
+        try:
+            start_date = datetime.strptime(month, "%Y-%m")
+            end_date = start_date + timedelta(days=31)
+
+            query = query.filter(
+                models.Transaction.created_at >= start_date,
+                models.Transaction.created_at < end_date
+            )
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid month format. Use YYYY-MM")
+
+    if category:
+        query = query.filter(models.Transaction.category == category)
+
+    if txn_type:
+        query = query.filter(models.Transaction.transaction_type == txn_type)
+
+    return query.all()
 
 # =========================
 # SUMMARY ROUTES
@@ -333,11 +341,7 @@ def get_monthly_summary(
         month_key = txn.created_at.strftime("%Y-%m")
 
         if month_key not in monthly_data:
-            monthly_data[month_key] = {
-                "income": 0,
-                "expense": 0,
-                "balance": 0
-            }
+            monthly_data[month_key] = {"income": 0, "expense": 0, "balance": 0}
 
         if txn.transaction_type == "income":
             monthly_data[month_key]["income"] += txn.amount
@@ -350,6 +354,120 @@ def get_monthly_summary(
         )
 
     return monthly_data
+
+@app.get("/summary/yearly")
+def get_yearly_summary(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    transactions = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id
+    ).all()
+
+    yearly_data = {}
+
+    for txn in transactions:
+
+        year_key = txn.created_at.strftime("%Y")
+
+        if year_key not in yearly_data:
+            yearly_data[year_key] = {
+                "income": 0,
+                "expense": 0,
+                "balance": 0
+            }
+
+        if txn.transaction_type == "income":
+            yearly_data[year_key]["income"] += txn.amount
+
+        elif txn.transaction_type == "expense":
+            yearly_data[year_key]["expense"] += txn.amount
+
+        yearly_data[year_key]["balance"] = (
+            yearly_data[year_key]["income"]
+            - yearly_data[year_key]["expense"]
+        )
+
+    return yearly_data
+
+# =========================
+# BUDGET ROUTES
+# =========================
+
+@app.post("/budgets", response_model=schemas.BudgetResponse)
+def set_budget(
+    budget: schemas.BudgetCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    existing_budget = db.query(models.Budget).filter(
+        models.Budget.user_id == current_user.id,
+        models.Budget.category == budget.category,
+        models.Budget.month == budget.month
+    ).first()
+
+    if existing_budget:
+        existing_budget.amount = budget.amount
+        db.commit()
+        db.refresh(existing_budget)
+        return existing_budget
+
+    new_budget = models.Budget(
+        category=budget.category,
+        amount=budget.amount,
+        month=budget.month,
+        user_id=current_user.id
+    )
+
+    db.add(new_budget)
+    db.commit()
+    db.refresh(new_budget)
+
+    return new_budget
+
+
+@app.get("/budgets/summary")
+def budget_summary(
+    month: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    budgets = db.query(models.Budget).filter(
+        models.Budget.user_id == current_user.id,
+        models.Budget.month == month
+    ).all()
+
+    transactions = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id
+    ).all()
+
+    result = {}
+
+    for budget in budgets:
+
+        spent = 0
+
+        for txn in transactions:
+
+            txn_month = txn.created_at.strftime("%Y-%m")
+
+            if (
+                txn_month == month
+                and txn.category == budget.category
+                and txn.transaction_type == "expense"
+            ):
+                spent += txn.amount
+
+        result[budget.category] = {
+            "budget": budget.amount,
+            "spent": spent,
+            "remaining": budget.amount - spent
+        }
+
+    return result
 
 # =========================
 # SMART INSIGHTS
@@ -389,7 +507,7 @@ def get_insights(
     }
 
 # =========================
-# CSV UPLOAD ROUTE (HYBRID ENABLED)
+# CSV UPLOAD ROUTE
 # =========================
 
 @app.post("/transactions/upload")
@@ -398,6 +516,7 @@ def upload_transactions_csv(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are allowed")
 
@@ -435,6 +554,9 @@ def upload_transactions_csv(
         "transactions_inserted": inserted_count
     }
 
+# =========================
+# CATEGORY CORRECTION
+# =========================
 
 @app.put("/transactions/{transaction_id}/correct")
 def correct_transaction_category(
@@ -443,6 +565,7 @@ def correct_transaction_category(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+
     txn = db.query(models.Transaction).filter(
         models.Transaction.id == transaction_id,
         models.Transaction.user_id == current_user.id
@@ -451,7 +574,6 @@ def correct_transaction_category(
     if not txn:
         raise HTTPException(status_code=404, detail="Transaction not found")
 
-    # Save correction to feedback dataset
     feedback_path = os.path.join("ml", "user_feedback.csv")
     file_exists = os.path.exists(feedback_path)
 
@@ -460,11 +582,12 @@ def correct_transaction_category(
             f.write("description,category\n")
         f.write(f"{txn.description},{correction.category}\n")
 
-    # Update transaction in DB
     txn.category = correction.category
     db.commit()
 
     return {"message": "Category corrected and feedback stored"}
+
+    
 
 
 #source venv/bin/activate
