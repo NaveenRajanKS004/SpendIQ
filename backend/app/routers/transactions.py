@@ -124,18 +124,25 @@ def upload_transactions_csv(
             if not category:
                 category = predict_category(description)
 
+            # Parse date from CSV
+            txn_date = None
+            if row.get("date"):
+                txn_date = datetime.strptime(row["date"], "%Y-%m-%d")
+
             new_transaction = models.Transaction(
                 amount=float(row.get("amount", 0)),
                 category=category,
                 description=description,
                 transaction_type=row["transaction_type"],
-                user_id=current_user.id
+                user_id=current_user.id,
+                created_at=txn_date if txn_date else datetime.utcnow()
             )
 
             db.add(new_transaction)
             inserted_count += 1
 
-        except Exception:
+        except Exception as e:
+            print("CSV row error:", e)
             continue
 
     db.commit()
@@ -179,3 +186,21 @@ def correct_transaction_category(
     db.commit()
 
     return {"message": "Category corrected and feedback stored"}
+
+
+@router.get("/transactions/months")
+def get_available_months(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    transactions = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id
+    ).all()
+
+    months = set()
+
+    for txn in transactions:
+        months.add(txn.created_at.strftime("%Y-%m"))
+
+    return sorted(list(months))

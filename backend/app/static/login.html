@@ -1,54 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SpendIQ Login</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body class="login-body">
+<body class="auth-body">
 
-<div class="login-container">
-    <h1>SpendIQ</h1>
-    <p>Smart Financial Analyzer</p>
+<div class="auth-container">
 
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
+<img src="/static/assets/logo-primary.svg" class="auth-logo">
 
-    <button onclick="login()">Login</button>
+<h2>Login to SpendIQ</h2>
 
-    <p id="error" class="error"></p>
-    <p style="margin-top:15px;">
-    Don't have an account?
-    <a href="/register-page">Sign Up</a>
+<input id="email" type="email" placeholder="Email">
+
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p>
+Don't have an account?
+<a href="/register-page">Register</a>
 </p>
+
 </div>
 
-<script>
-async function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    const formData = new URLSearchParams();
-    formData.append("username", email);
-    formData.append("password", password);
-
-    const response = await fetch("/login", {
-        method: "POST",
-        body: formData,
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-        localStorage.setItem("token", data.access_token);
-        window.location.href = "/dashboard";
-    } else {
-        document.getElementById("error").innerText = "Invalid credentials";
-    }
-}
-</script>
+<script src="/static/js/login.js"></script>
 
 </body>
-</html>

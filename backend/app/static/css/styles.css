@@ -1,0 +1,375 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f3f4f6;
+}
+
+h2 {
+    font-size: 26px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    color: #111827;
+}
+
+h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* NAVBAR */
+
+.navbar {
+    background: white;
+    color: #111827;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 50px;
+    width: auto;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+
+/* DROPDOWNS */
+
+select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background: white;
+}
+
+
+/* BUTTONS */
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+}
+
+.upload-btn {
+    background: #2563EB;
+    color: white;
+}
+
+.upload-btn:hover {
+    background: #1D4ED8;
+    transform: translateY(-1px);
+}
+
+.logout-btn {
+    background: #DC2626;
+    color: white;
+}
+
+.logout-btn:hover {
+    background: #B91C1C;
+    transform: translateY(-1px);
+}
+
+
+/* MAIN CONTAINER */
+
+.container {
+    padding: 30px;
+}
+
+
+/* SUMMARY CARDS */
+
+.cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    flex: 1;
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.05),
+        0 4px 12px rgba(0,0,0,0.05);
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,0.08),
+        0 10px 20px rgba(0,0,0,0.08);
+}
+
+.card p {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+
+/* CHARTS */
+
+.charts {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.chart-card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.05),
+        0 4px 12px rgba(0,0,0,0.05);
+
+    height: 400px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-card h3 {
+    margin-bottom: 10px;
+}
+
+.chart-container {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+/* BUDGETS */
+
+.budgets {
+    background: white;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 10px;
+}
+
+.budget-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.budget-form input {
+    padding: 8px;
+}
+
+.budget-item {
+    margin-bottom: 12px;
+}
+
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.budget-bar {
+    width: 100%;
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.budget-progress {
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        #2563EB,
+        #22c55e
+    );
+    border-radius: 8px;
+}
+
+.budget-progress.green {
+    background: #16a34a;
+}
+
+.budget-progress.yellow {
+    background: #f59e0b;
+}
+
+.budget-progress.red {
+    background: #dc2626;
+}
+
+
+/* SUBSCRIPTIONS */
+
+.subscriptions {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.subscriptions ul {
+    list-style: none;
+    padding: 0;
+}
+
+.subscriptions li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+
+/* TRANSACTIONS */
+
+.transactions table {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.transactions th,
+.transactions td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    word-break: break-word;
+}
+
+.transactions th {
+    background: #f9fafb;
+}
+
+.transactions tbody tr:hover {
+    background: #f9fafb;
+}
+
+.transactions th:nth-child(1){width:15%}
+.transactions th:nth-child(2){width:20%}
+.transactions th:nth-child(3){width:35%}
+.transactions th:nth-child(4){width:15%}
+.transactions th:nth-child(5){width:15%}
+
+
+/* INSIGHTS */
+
+.insights {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 30px;
+
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.05),
+        0 4px 12px rgba(0,0,0,0.05);
+}
+
+.insights ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.insights li {
+    margin-bottom: 8px;
+}
+
+
+/* TRENDS */
+
+.trend {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.trend.up {
+    color: #dc2626;
+}
+
+.trend.down {
+    color: #16a34a;
+}
+
+
+/* AUTH PAGES */
+
+.auth-body {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(
+        135deg,
+        #1E3A8A,
+        #2563EB,
+        #22c55e
+    );
+}
+
+.auth-container {
+    width: 380px;
+    padding: 40px;
+    border-radius: 14px;
+    text-align: center;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.auth-logo {
+    height: 80px;
+    margin-bottom: 20px;
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+}
+
+.auth-container button {
+    width: 100%;
+    padding: 12px;
+    background: #2563EB;
+    color: white;
+    border-radius: 8px;
+}
+
+.auth-container button:hover {
+    background: #1D4ED8;
+}

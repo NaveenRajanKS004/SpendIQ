@@ -196,3 +196,123 @@ def get_insights(
         "highest_expense": highest_expense,
         "top_category": top_category
     }
+
+
+
+
+@router.get("/analytics/yearly")
+def get_yearly_analytics(
+    year: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    transactions = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id
+    ).all()
+
+    monthly_income = [0] * 12
+    monthly_expense = [0] * 12
+    category_totals = {}
+
+    total_income = 0
+    total_expense = 0
+
+    for txn in transactions:
+
+        if txn.created_at.year != year:
+            continue
+
+        month_index = txn.created_at.month - 1
+
+        if txn.transaction_type == "income":
+
+            monthly_income[month_index] += txn.amount
+            total_income += txn.amount
+
+        else:
+
+            monthly_expense[month_index] += txn.amount
+            total_expense += txn.amount
+
+            category_totals[txn.category] = (
+                category_totals.get(txn.category, 0) + txn.amount
+            )
+
+    return {
+
+        "income": total_income,
+
+        "expense": total_expense,
+
+        "balance": total_income - total_expense,
+
+        "monthly_income": monthly_income,
+
+        "monthly_expense": monthly_expense,
+
+        "category_totals": category_totals
+
+    }
+
+
+
+
+@router.get("/analytics/monthly")
+def get_monthly_analytics(
+    year: int,
+    month: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    transactions = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id
+    ).all()
+
+    total_income = 0
+    total_expense = 0
+    category_totals = {}
+    month_transactions = []
+
+    for txn in transactions:
+
+        if txn.created_at.year != year:
+            continue
+
+        if txn.created_at.month != month:
+            continue
+
+        if txn.transaction_type == "income":
+
+            total_income += txn.amount
+
+        else:
+
+            total_expense += txn.amount
+
+            category_totals[txn.category] = (
+                category_totals.get(txn.category, 0) + txn.amount
+            )
+
+        month_transactions.append({
+            "date": txn.created_at.strftime("%Y-%m-%d"),
+            "category": txn.category,
+            "description": txn.description,
+            "amount": txn.amount,
+            "type": txn.transaction_type
+        })
+
+    return {
+
+        "income": total_income,
+
+        "expense": total_expense,
+
+        "balance": total_income - total_expense,
+
+        "category_totals": category_totals,
+
+        "transactions": month_transactions
+
+    }

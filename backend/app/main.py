@@ -9,6 +9,7 @@ from .routers import auth
 from .routers import transactions
 from .routers import analytics
 from .routers import budgets
+from .routers import intelligence
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -37,7 +38,8 @@ def serve_dashboard():
     return FileResponse("app/static/dashboard.html")
 
 
-app.include_router(auth.router)
-app.include_router(transactions.router)
-app.include_router(analytics.router)
-app.include_router(budgets.router)
+app.include_router(auth.router, tags=["Auth"])
+app.include_router(transactions.router, tags=["Transactions"])
+app.include_router(analytics.router, tags=["Analytics"])
+app.include_router(budgets.router, tags=["Budgets"])
+app.include_router(intelligence.router, tags=["Intelligence"])
