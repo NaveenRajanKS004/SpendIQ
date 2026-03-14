@@ -257,9 +257,8 @@ button {
     width: 100%;
     background: white;
     border-radius: 10px;
-    border-collapse: separate;
-    border-spacing: 0;
-    table-layout: fixed;
+    border-collapse: collapse;
+    table-layout: auto;
 }
 
 .transactions th,
@@ -278,11 +277,47 @@ button {
     background: #f9fafb;
 }
 
-.transactions th:nth-child(1){width:15%}
-.transactions th:nth-child(2){width:20%}
-.transactions th:nth-child(3){width:35%}
-.transactions th:nth-child(4){width:15%}
-.transactions th:nth-child(5){width:15%}
+/* Column widths */
+
+.transactions th:nth-child(1){width:12%}  /* Date */
+.transactions th:nth-child(2){width:18%}  /* Category */
+.transactions th:nth-child(3){width:35%}  /* Description */
+.transactions th:nth-child(4){width:12%}  /* Amount */
+.transactions th:nth-child(5){width:10%}  /* Type */
+.transactions th:nth-child(6){width:13%}  /* Correct */
+
+/* Correct column styling */
+
+.transactions th:last-child,
+.transactions td:last-child {
+    min-width: 180px;
+}
+
+/* Dropdown styling */
+
+.transactions select {
+    padding: 4px 6px;
+    margin-right: 6px;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    font-size: 12px;
+}
+
+/* Correct button styling */
+
+.transactions button {
+    padding: 4px 8px;
+    font-size: 12px;
+    background: #2563EB;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.transactions button:hover {
+    background: #1D4ED8;
+}
 
 
 /* INSIGHTS */

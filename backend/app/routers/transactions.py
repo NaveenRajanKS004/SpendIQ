@@ -2,7 +2,7 @@ import os
 import csv
 from io import StringIO
 from typing import List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from ..database import SessionLocal
 from .. import models, schemas
 from ..security import get_current_user
-from ..services.classifier import predict_category
+from ..services.ml_service import predict_category, retrain_model
 
 
 router = APIRouter()
@@ -35,12 +35,20 @@ def create_transaction(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    description = (transaction.description or "").strip()
+    category = transaction.category
+
+    # Use ML if category not provided
+    if not category and description:
+        category = predict_category(description.lower())
+
     new_transaction = models.Transaction(
         amount=transaction.amount,
-        category=transaction.category,
-        description=transaction.description,
+        category=category,
+        description=description,
         transaction_type=transaction.transaction_type,
-        user_id=current_user.id
+        user_id=current_user.id,
+        created_at=datetime.utcnow()
     )
 
     db.add(new_transaction)
@@ -70,11 +78,11 @@ def get_transactions(
     if month:
         try:
             start_date = datetime.strptime(month, "%Y-%m")
-            end_date = datetime(
-                start_date.year + (start_date.month // 12),
-                ((start_date.month % 12) + 1),
-                1
-            )
+
+            if start_date.month == 12:
+                end_date = datetime(start_date.year + 1, 1, 1)
+            else:
+                end_date = datetime(start_date.year, start_date.month + 1, 1)
 
             query = query.filter(
                 models.Transaction.created_at >= start_date,
@@ -118,22 +126,27 @@ def upload_transactions_csv(
     for row in csv_reader:
         try:
 
-            description = row.get("description", "").strip()
-            category = row.get("category", "").strip()
+            description = (row.get("description") or "").strip()
+            category = (row.get("category") or "").strip()
 
+            if not description:
+                continue
+
+            # ML prediction if category missing
             if not category:
-                category = predict_category(description)
+                category = predict_category(description.lower())
 
-            # Parse date from CSV
             txn_date = None
             if row.get("date"):
                 txn_date = datetime.strptime(row["date"], "%Y-%m-%d")
 
+            amount = float(str(row.get("amount", 0)).replace(",", ""))
+
             new_transaction = models.Transaction(
-                amount=float(row.get("amount", 0)),
+                amount=amount,
                 category=category,
                 description=description,
-                transaction_type=row["transaction_type"],
+                transaction_type=row.get("transaction_type", "expense"),
                 user_id=current_user.id,
                 created_at=txn_date if txn_date else datetime.utcnow()
             )
@@ -177,6 +190,7 @@ def correct_transaction_category(
     file_exists = os.path.exists(feedback_path)
 
     with open(feedback_path, "a") as f:
+
         if not file_exists:
             f.write("description,category\n")
 
@@ -185,8 +199,16 @@ def correct_transaction_category(
     txn.category = correction.category
     db.commit()
 
-    return {"message": "Category corrected and feedback stored"}
+    # Start background retraining
+    retrain_model()
 
+    return {
+        "message": "Category corrected. Model retraining in background."
+    }
+
+# =========================
+# AVAILABLE MONTHS
+# =========================
 
 @router.get("/transactions/months")
 def get_available_months(

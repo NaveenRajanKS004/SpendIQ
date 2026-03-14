@@ -2,82 +2,130 @@ import random
 import pandas as pd
 import string
 
-categories = {
+rows = []
+
+# ==============================
+# REAL MERCHANT PATTERNS
+# ==============================
+
+merchant_rules = {
     "Food": [
-        "swiggy", "zomato", "restaurant",
-        "kirana store", "cafe", "hotel"
+        "zomato",
+        "swiggy",
+        "restaurant",
+        "cafe",
+        "bbnow",
+        "bigbasket"
     ],
+
     "Transport": [
-        "uber", "ola", "petrol pump",
-        "fuel station", "hpcl"
+        "uber",
+        "ola",
+        "fuel",
+        "petrol"
     ],
+
     "Shopping": [
-        "amazon", "flipkart", "store",
-        "mall purchase", "retail shop"
+        "amazon",
+        "flipkart",
+        "store",
+        "mall"
     ],
+
     "Healthcare": [
-        "apollo", "medplus", "hospital",
-        "clinic", "pharmacy"
+        "apollo",
+        "medplus",
+        "hospital",
+        "pharmacy"
     ],
+
     "Utilities": [
-        "electricity", "water bill",
-        "gas bill", "mobile recharge",
-        "internet payment"
+        "electricity",
+        "billpay",
+        "internet",
+        "mobile recharge",
+        "gas bill"
     ],
+
     "Entertainment": [
-        "netflix", "spotify",
-        "movie", "gaming",
+        "netflix",
+        "spotify",
+        "gaming",
         "bookmyshow"
     ],
+
     "Income": [
-        "salary", "bonus",
-        "consulting payment",
-        "freelance credit"
+        "salary",
+        "sparrkle technologies",
+        "bonus",
+        "credit"
     ],
+
     "Transfers": [
-        "upi transfer", "bank transfer",
-        "imps", "sent to friend",
-        "upi to ramesh"
+        "upi",
+        "imps",
+        "neft",
+        "transfer",
+        "payment from phone"
     ]
 }
 
+# ==============================
+# REALISTIC TRANSACTION FORMATS
+# ==============================
+
 formats = [
-    "UPI/{rand}/{merchant}/{code}",
-    "POS {rand} {merchant} MUMBAI",
-    "NEFT-{merchant}-{rand}",
-    "{merchant} PAYMENT",
-    "{merchant} ONLINE",
+    "UPI-{merchant}-PAYMENT",
+    "UPI-{merchant}-{rand}",
+    "POS {merchant} STORE",
+    "{merchant} ONLINE PAYMENT",
+    "NEFT CR-{merchant}",
+    "IMPS-{merchant}",
+    "UPI-{merchant}-PAYMENT FROM PHONE"
 ]
+
+# ==============================
+# RANDOM HELPERS
+# ==============================
 
 def random_digits(n=6):
     return ''.join(random.choices(string.digits, k=n))
 
-def random_code():
-    return ''.join(random.choices(string.ascii_lowercase, k=4)) + "@okaxis"
 
-rows = []
+# ==============================
+# GENERATE DATASET
+# ==============================
 
-for category, merchants in categories.items():
-    for _ in range(150):
+for category, merchants in merchant_rules.items():
+
+    for _ in range(300):
+
         merchant = random.choice(merchants).upper()
+
         fmt = random.choice(formats)
 
         description = fmt.format(
             merchant=merchant,
-            rand=random_digits(),
-            code=random_code()
+            rand=random_digits()
         )
-
-        # 5% label noise
-        if random.random() < 0.02:
-            category = random.choice(list(categories.keys()))
 
         rows.append({
             "description": description,
             "category": category
         })
 
+
+# ==============================
+# ADD SOME NOISE
+# ==============================
+
+for row in rows:
+    if random.random() < 0.02:
+        row["category"] = random.choice(list(merchant_rules.keys()))
+
+
 df = pd.DataFrame(rows)
+
 df.to_csv("ml/dataset.csv", index=False)
 
-print("Hard-mode noisy dataset generated with", len(df), "rows.")
+print("Dataset generated:", len(df), "rows")
