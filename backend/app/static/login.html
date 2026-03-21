@@ -2,33 +2,53 @@
 <html>
 
 <head>
+
     <title>Login</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+
 </head>
 
 <body>
 
+<!-- =========================
+     AUTH WRAPPER
+========================= -->
+
 <div class="auth-wrapper">
 
-    <!-- LEFT PANEL -->
+    <!-- =========================
+         LEFT PANEL (Branding)
+    ========================= -->
+
     <div class="auth-left">
         <img src="/static/assets/logo-primary.svg" class="auth-logo-large">
+
         <h1>SpendIQ</h1>
-        <p>Welcome back. Let’s manage your money smarter.</p>
+
+        <p>
+            Welcome back. Let’s manage your money smarter.
+        </p>
     </div>
 
-    <!-- RIGHT PANEL -->
+
+    <!-- =========================
+         RIGHT PANEL (Login Form)
+    ========================= -->
+
     <div class="auth-right">
 
         <div class="auth-box">
 
             <h2>Login</h2>
 
+            <!-- User Inputs -->
             <input id="email" type="email" placeholder="Email">
             <input id="password" type="password" placeholder="Password">
 
+            <!-- Action -->
             <button onclick="login()">Login</button>
 
+            <!-- Navigation -->
             <p>
                 Don’t have an account?
                 <a href="/register-page">Register</a>
@@ -39,6 +59,11 @@
     </div>
 
 </div>
+
+
+<!-- =========================
+     SCRIPT
+========================= -->
 
 <script src="/static/js/login.js"></script>
 

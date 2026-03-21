@@ -3,183 +3,219 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <title>SpendIQ Dashboard</title>
 
-<title>SpendIQ Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
 
-<link rel="stylesheet" href="/static/css/styles.css">
+    <!-- Auth check -->
+    <script src="/static/js/auth.js"></script>
 
-<script src="/static/js/auth.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
 <body>
 
+<!-- Ensure user is logged in -->
 <script>
-requireLogin()
+    requireLogin()
 </script>
+
+<!-- =========================
+     NAVBAR
+========================= -->
 
 <header class="navbar">
 
-<div class="logo">
-<img src="/static/assets/logo-primary.svg" class="logo-img">
-</div>
+    <div class="logo">
+        <img src="/static/assets/logo-primary.svg" class="logo-img">
+    </div>
 
-<div class="nav-right">
+    <div class="nav-right">
 
-<select id="yearSelector"></select>
+        <!-- Year Selector -->
+        <select id="yearSelector"></select>
 
-<select id="monthSelector">
+        <!-- Month Selector -->
+        <select id="monthSelector">
+            <option value="all">All Months</option>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
 
-<option value="all">All Months</option>
+        <!-- CSV Upload -->
+        <input type="file" id="csvUpload" accept=".csv" hidden>
+        <button class="upload-btn" onclick="triggerUpload()">Upload CSV</button>
 
-<option value="1">January</option>
-<option value="2">February</option>
-<option value="3">March</option>
-<option value="4">April</option>
-<option value="5">May</option>
-<option value="6">June</option>
-<option value="7">July</option>
-<option value="8">August</option>
-<option value="9">September</option>
-<option value="10">October</option>
-<option value="11">November</option>
-<option value="12">December</option>
+        <!-- Navigation Actions -->
+        <button class="logout-btn" onclick="logout()">Logout</button>
 
-</select>
+        <button onclick="window.location.href='/profile'">
+            Profile
+        </button>
 
-<input type="file" id="csvUpload" accept=".csv" hidden>
-
-<button class="upload-btn" onclick="triggerUpload()">Upload CSV</button>
-
-<button class="logout-btn" onclick="logout()">Logout</button>
-
-<button onclick="window.location.href='/profile'">
-    Profile
-</button>
-
-</div>
+    </div>
 
 </header>
 
 
+<!-- =========================
+     MAIN CONTAINER
+========================= -->
+
 <div class="container">
 
-<h2 id="dashboardTitle"></h2>
+    <h2 id="dashboardTitle"></h2>
 
 
-<div class="cards">
+    <!-- =========================
+         SUMMARY CARDS
+    ========================= -->
 
-<div class="card income">
-<h3>Total Income</h3>
-<p id="income">₹0</p>
-<span id="incomeTrend" class="trend"></span>
+    <div class="cards">
+
+        <div class="card income">
+            <h3>Total Income</h3>
+            <p id="income">₹0</p>
+            <span id="incomeTrend" class="trend"></span>
+        </div>
+
+        <div class="card expense">
+            <h3>Total Expense</h3>
+            <p id="expense">₹0</p>
+            <span id="expenseTrend" class="trend"></span>
+        </div>
+
+        <div class="card balance">
+            <h3>Balance</h3>
+            <p id="balance">₹0</p>
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         CHARTS
+    ========================= -->
+
+    <div class="charts">
+
+        <div class="chart-card">
+            <h3>Monthly Income vs Expense</h3>
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <h3>Expense Categories</h3>
+            <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         INSIGHTS
+    ========================= -->
+
+    <div class="insights">
+
+        <h3>💡 Spending Insights</h3>
+        <ul id="insightsList"></ul>
+
+    </div>
+
+
+    <!-- =========================
+         BUDGETS
+    ========================= -->
+
+    <div class="budgets">
+
+        <h3>Budget Overview</h3>
+
+        <div class="budget-form">
+
+            <select id="budgetCategory">
+                <option value="Food">🍔 Food</option>
+                <option value="Transport">🚗 Transport</option>
+                <option value="Shopping">🛍 Shopping</option>
+                <option value="Healthcare">🏥 Healthcare</option>
+                <option value="Utilities">💡 Utilities</option>
+                <option value="Entertainment">🎬 Entertainment</option>
+            </select>
+
+            <input id="budgetAmount" type="number" placeholder="Amount">
+
+            <button onclick="setBudget()">Set Budget</button>
+
+        </div>
+
+        <div id="budgetContainer"></div>
+
+    </div>
+
+
+    <!-- =========================
+         SUBSCRIPTIONS
+    ========================= -->
+
+    <div class="subscriptions">
+
+        <h3>Recurring Subscriptions</h3>
+        <ul id="subscriptionList"></ul>
+
+    </div>
+
+
+    <!-- =========================
+         TRANSACTIONS TABLE
+    ========================= -->
+
+    <div id="transactionsSection" class="transactions" style="display:none">
+
+        <h3>Transactions</h3>
+
+        <table id="transactionTable">
+
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Correct</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+
+        </table>
+
+    </div>
+
 </div>
 
-<div class="card expense">
-<h3>Total Expense</h3>
-<p id="expense">₹0</p>
-<span id="expenseTrend" class="trend"></span>
-</div>
 
-<div class="card balance">
-<h3>Balance</h3>
-<p id="balance">₹0</p>
-</div>
-
-</div>
-
-
-<div class="charts">
-
-<div class="chart-card">
-<h3>Monthly Income vs Expense</h3>
-<div class="chart-container">
-<canvas id="barChart"></canvas>
-</div>
-</div>
-
-<div class="chart-card">
-<h3>Expense Categories</h3>
-<div class="chart-container">
-<canvas id="categoryChart"></canvas>
-</div>
-</div>
-
-</div>
-
-
-<div class="insights">
-
-<h3>💡 Spending Insights</h3>
-
-<ul id="insightsList"></ul>
-
-</div>
-
-
-<div class="budgets">
-
-<h3>Budget Overview</h3>
-
-<div class="budget-form">
-
-<select id="budgetCategory">
-<option value="Food">🍔 Food</option>
-<option value="Transport">🚗 Transport</option>
-<option value="Shopping">🛍 Shopping</option>
-<option value="Healthcare">🏥 Healthcare</option>
-<option value="Utilities">💡 Utilities</option>
-<option value="Entertainment">🎬 Entertainment</option>
-</select>
-
-<input id="budgetAmount" type="number" placeholder="Amount">
-
-<button onclick="setBudget()">Set Budget</button>
-
-</div>
-
-<div id="budgetContainer"></div>
-
-</div>
-
-
-<div class="subscriptions">
-
-<h3>Recurring Subscriptions</h3>
-
-<ul id="subscriptionList"></ul>
-
-</div>
-
-
-<div id="transactionsSection" class="transactions" style="display:none">
-
-<h3>Transactions</h3>
-
-<table id="transactionTable">
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Category</th>
-<th>Description</th>
-<th>Amount</th>
-<th>Type</th>
-<th>Correct</th>
-</tr>
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-</div>
-
-</div>
-
+<!-- =========================
+     SCRIPTS
+========================= -->
 
 <script src="/static/js/dashboard/utils.js"></script>
 <script src="/static/js/dashboard/charts.js"></script>

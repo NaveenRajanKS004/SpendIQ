@@ -1,31 +1,35 @@
-async function loadSubscriptions(){
+// =========================
+// LOAD SUBSCRIPTIONS
+// =========================
+
+async function loadSubscriptions() {
 
     const list = document.getElementById("subscriptionList")
 
-    try{
+    try {
+        // Fetch recurring subscriptions
+        const res = await fetch(`${API}/subscriptions`, { headers })
 
-        const res = await fetch(`${API}/subscriptions`,{headers})
-
-        if(!res.ok) return
+        // If endpoint fails silently, do nothing
+        if (!res.ok) return
 
         const data = await res.json()
 
+        // Clear previous list
         list.innerHTML = ""
 
-        data.forEach(sub=>{
+        // Render subscriptions
+        data.forEach(sub => {
 
             const li = document.createElement("li")
 
             li.innerText = `🔁 ${sub.description} — ${formatINR(sub.amount)}`
 
             list.appendChild(li)
-
         })
 
-    }catch(err){
-
+    } catch (err) {
+        // Fail gracefully (backend may not be available)
         console.log("Subscription endpoint unavailable")
-
     }
-
 }

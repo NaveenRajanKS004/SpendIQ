@@ -1,18 +1,22 @@
+/* =========================
+   GLOBAL RESET & BASE
+========================= */
+
 * {
     box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
+    font-family: Arial, sans-serif;
     background: #f3f4f6;
 }
 
 h2 {
     font-size: 26px;
-    margin-bottom: 20px;
     font-weight: 700;
     color: #111827;
+    margin-bottom: 20px;
 }
 
 h3 {
@@ -21,15 +25,18 @@ h3 {
     color: #374151;
 }
 
-/* NAVBAR */
+
+/* =========================
+   NAVBAR
+========================= */
 
 .navbar {
-    background: white;
-    color: #111827;
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     padding: 15px 30px;
+    background: white;
     border-bottom: 1px solid #e5e7eb;
 }
 
@@ -40,7 +47,6 @@ h3 {
 
 .logo-img {
     height: 50px;
-    width: auto;
 }
 
 .nav-right {
@@ -50,7 +56,9 @@ h3 {
 }
 
 
-/* DROPDOWNS */
+/* =========================
+   FORM ELEMENTS
+========================= */
 
 select {
     padding: 8px 12px;
@@ -59,18 +67,20 @@ select {
     background: white;
 }
 
-
-/* BUTTONS */
-
 button {
     cursor: pointer;
     border: none;
     border-radius: 8px;
     padding: 8px 16px;
-    font-weight: 600;
+
     font-size: 14px;
+    font-weight: 600;
+
     transition: all 0.15s ease;
 }
+
+
+/* BUTTON VARIANTS */
 
 .upload-btn {
     background: #2563EB;
@@ -93,14 +103,18 @@ button {
 }
 
 
-/* MAIN CONTAINER */
+/* =========================
+   MAIN CONTAINER
+========================= */
 
 .container {
     padding: 30px;
 }
 
 
-/* SUMMARY CARDS */
+/* =========================
+   SUMMARY CARDS
+========================= */
 
 .cards {
     display: flex;
@@ -110,8 +124,8 @@ button {
 
 .card {
     flex: 1;
-    background: white;
     padding: 22px;
+    background: white;
     border-radius: 12px;
 
     box-shadow:
@@ -135,7 +149,9 @@ button {
 }
 
 
-/* CHARTS */
+/* =========================
+   CHARTS
+========================= */
 
 .charts {
     display: flex;
@@ -144,18 +160,18 @@ button {
 }
 
 .chart-card {
-    background: white;
+    display: flex;
+    flex-direction: column;
+
+    height: 400px;
     padding: 22px;
+
+    background: white;
     border-radius: 12px;
 
     box-shadow:
         0 1px 2px rgba(0,0,0,0.05),
         0 4px 12px rgba(0,0,0,0.05);
-
-    height: 400px;
-
-    display: flex;
-    flex-direction: column;
 }
 
 .chart-card h3 {
@@ -163,8 +179,8 @@ button {
 }
 
 .chart-container {
-    position: relative;
     flex: 1;
+    position: relative;
     width: 100%;
     min-height: 0;
 }
@@ -175,12 +191,15 @@ button {
 }
 
 
-/* BUDGETS */
+/* =========================
+   BUDGETS
+========================= */
 
 .budgets {
-    background: white;
-    padding: 20px;
     margin-top: 30px;
+    padding: 20px;
+
+    background: white;
     border-radius: 10px;
 }
 
@@ -214,34 +233,25 @@ button {
 
 .budget-progress {
     height: 100%;
-    background: linear-gradient(
-        90deg,
-        #2563EB,
-        #22c55e
-    );
     border-radius: 8px;
+    background: linear-gradient(90deg, #2563EB, #22c55e);
 }
 
-.budget-progress.green {
-    background: #16a34a;
-}
-
-.budget-progress.yellow {
-    background: #f59e0b;
-}
-
-.budget-progress.red {
-    background: #dc2626;
-}
+.budget-progress.green { background: #16a34a; }
+.budget-progress.yellow { background: #f59e0b; }
+.budget-progress.red { background: #dc2626; }
 
 
-/* SUBSCRIPTIONS */
+/* =========================
+   SUBSCRIPTIONS
+========================= */
 
 .subscriptions {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
     margin-top: 30px;
+    padding: 20px;
+
+    background: white;
+    border-radius: 10px;
 }
 
 .subscriptions ul {
@@ -255,14 +265,15 @@ button {
 }
 
 
-/* TRANSACTIONS */
+/* =========================
+   TRANSACTIONS TABLE
+========================= */
 
 .transactions table {
     width: 100%;
     background: white;
     border-radius: 10px;
     border-collapse: collapse;
-    table-layout: auto;
 }
 
 .transactions th,
@@ -283,40 +294,29 @@ button {
 
 /* Column widths */
 
-.transactions th:nth-child(1){width:12%}  /* Date */
-.transactions th:nth-child(2){width:18%}  /* Category */
-.transactions th:nth-child(3){width:35%}  /* Description */
-.transactions th:nth-child(4){width:12%}  /* Amount */
-.transactions th:nth-child(5){width:10%}  /* Type */
-.transactions th:nth-child(6){width:13%}  /* Correct */
+.transactions th:nth-child(1) { width: 12%; }
+.transactions th:nth-child(2) { width: 18%; }
+.transactions th:nth-child(3) { width: 35%; }
+.transactions th:nth-child(4) { width: 12%; }
+.transactions th:nth-child(5) { width: 10%; }
+.transactions th:nth-child(6) { width: 13%; }
 
-/* Correct column styling */
-
-.transactions th:last-child,
-.transactions td:last-child {
-    min-width: 180px;
-}
-
-/* Dropdown styling */
+/* Inputs */
 
 .transactions select {
     padding: 4px 6px;
     margin-right: 6px;
+    font-size: 12px;
     border-radius: 4px;
     border: 1px solid #d1d5db;
-    font-size: 12px;
 }
-
-/* Correct button styling */
 
 .transactions button {
     padding: 4px 8px;
     font-size: 12px;
     background: #2563EB;
     color: white;
-    border: none;
     border-radius: 4px;
-    cursor: pointer;
 }
 
 .transactions button:hover {
@@ -324,13 +324,16 @@ button {
 }
 
 
-/* INSIGHTS */
+/* =========================
+   INSIGHTS
+========================= */
 
 .insights {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
     margin-top: 30px;
+    padding: 20px;
+
+    background: white;
+    border-radius: 12px;
 
     box-shadow:
         0 1px 2px rgba(0,0,0,0.05),
@@ -347,56 +350,37 @@ button {
 }
 
 
-/* TRENDS */
-
-.trend {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.trend.up {
-    color: #dc2626;
-}
-
-.trend.down {
-    color: #16a34a;
-}
-
-
-/* AUTH PAGES */
+/* =========================
+   AUTH PAGES
+========================= */
 
 .auth-body {
-    height: 100vh;
-    margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(
-        135deg,
-        #1E3A8A,
-        #2563EB,
-        #22c55e
-    );
+
+    height: 100vh;
+
+    background: linear-gradient(135deg, #1E3A8A, #2563EB, #22c55e);
 }
 
 .auth-container {
     width: 380px;
     padding: 40px;
-    border-radius: 14px;
-    text-align: center;
-    background: rgba(255,255,255,0.95);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-}
 
-.auth-logo {
-    height: 80px;
-    margin-bottom: 20px;
+    text-align: center;
+
+    background: rgba(255,255,255,0.95);
+    border-radius: 14px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
 .auth-container input {
     width: 100%;
     padding: 12px;
     margin-bottom: 12px;
+
     border-radius: 8px;
     border: 1px solid #d1d5db;
 }
@@ -415,7 +399,7 @@ button {
 
 
 /* =========================
-   AUTH SPLIT LAYOUT (NEW)
+   AUTH SPLIT LAYOUT
 ========================= */
 
 .auth-wrapper {
@@ -423,12 +407,8 @@ button {
     height: 100vh;
 }
 
-/* LEFT SIDE */
-
 .auth-left {
     flex: 1;
-    background: linear-gradient(135deg, #0f172a, #1e3a8a, #1d4ed8);
-    color: white;
 
     display: flex;
     flex-direction: column;
@@ -437,25 +417,19 @@ button {
 
     text-align: center;
     padding: 40px;
+
+    color: white;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a, #1d4ed8);
 }
 
 .auth-logo-large {
     width: 120px;
     margin-bottom: 20px;
-    filter: drop-shadow(0 4px 12px rgba(255,255,255,0.3));
 }
 
 .auth-left h1 {
     font-size: 36px;
-    margin-bottom: 10px;
 }
-
-.auth-left p {
-    font-size: 16px;
-    opacity: 0.9;
-}
-
-/* RIGHT SIDE */
 
 .auth-right {
     flex: 1;
@@ -465,20 +439,17 @@ button {
     background: #f9fafb;
 }
 
-/* FORM BOX */
-
 .auth-box {
     width: 100%;
     max-width: 380px;
-    background: white;
+
     padding: 40px;
+
+    background: white;
     border-radius: 14px;
 
-    box-shadow:
-        0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-
-/* INPUTS */
 
 .auth-box input {
     width: 100%;
@@ -487,12 +458,7 @@ button {
 
     border-radius: 8px;
     border: 1px solid #d1d5db;
-
-    font-size: 14px;
-    display: block;
 }
-
-/* BUTTON */
 
 .auth-box button {
     width: 100%;
@@ -501,70 +467,46 @@ button {
     background: #2563EB;
     color: white;
 
-    border: none;
     border-radius: 8px;
-
-    font-size: 15px;
-    font-weight: 600;
-
-    transition: 0.2s;
-    display: block;
 }
 
 .auth-box button:hover {
     background: #1D4ED8;
 }
 
-/* LINKS */
 
-.auth-box p {
-    margin-top: 15px;
-    font-size: 14px;
-    text-align: center;
-}
-
-.auth-box a {
-    color: #2563EB;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-/* PROFILE PAGE */
+/* =========================
+   PROFILE PAGE
+========================= */
 
 .profile-card {
     display: flex;
     gap: 30px;
-    background: white;
+
     padding: 25px;
+
+    background: white;
     border-radius: 12px;
-    margin-bottom: 25px;
 
     box-shadow:
         0 1px 2px rgba(0,0,0,0.05),
         0 4px 12px rgba(0,0,0,0.05);
 }
 
-.profile-left {
-    text-align: center;
-}
-
 .profile-img {
     width: 120px;
     height: 120px;
+
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.profile-right p {
-    margin: 8px 0;
 }
 
 .profile-section {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
     margin-bottom: 20px;
+    padding: 20px;
+
+    background: white;
+    border-radius: 12px;
 
     box-shadow:
         0 1px 2px rgba(0,0,0,0.05),
@@ -575,6 +517,7 @@ button {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
+
     border-radius: 8px;
     border: 1px solid #d1d5db;
 }

@@ -6,10 +6,25 @@ import os
 
 from ..database import SessionLocal
 from .. import models, schemas
-from ..security import hash_password, verify_password, create_access_token, get_current_user
+from ..security import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    get_current_user
+)
 
+
+# This router handles all authentication and user profile operations:
+# - registration & login
+# - profile retrieval & updates
+# - profile picture upload
+# - password management
 router = APIRouter()
 
+
+# =========================
+# DATABASE DEPENDENCY
+# =========================
 
 def get_db():
     db = SessionLocal()
@@ -26,6 +41,7 @@ def get_db():
 @router.post("/register", response_model=schemas.UserResponse)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
+    # Check if email is already registered
     existing_user = db.query(models.User).filter(
         models.User.email == user.email
     ).first()
@@ -33,8 +49,10 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    # Hash password before storing
     hashed_pw = hash_password(user.password)
 
+    # Create new user record
     new_user = models.User(
         name=user.name,
         email=user.email,
@@ -60,18 +78,22 @@ def login(
     db: Session = Depends(get_db)
 ):
 
-    db_user = db.query(models.User).filter(
+    # Fetch user using email (OAuth uses "username" field)
+    user = db.query(models.User).filter(
         models.User.email == form_data.username
     ).first()
 
-    if not db_user:
+    # Validate user existence
+    if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
-    if not verify_password(form_data.password, db_user.hashed_password):
+    # Verify password
+    if not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
+    # Generate JWT token
     access_token = create_access_token(
-        data={"sub": str(db_user.id)},
+        data={"sub": str(user.id)},
         expires_delta=timedelta(minutes=30),
     )
 
@@ -86,6 +108,7 @@ def login(
 def read_current_user(
     current_user: models.User = Depends(get_current_user)
 ):
+    # Directly return authenticated user
     return current_user
 
 
@@ -100,6 +123,7 @@ def update_profile(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Re-fetch user in current DB session (avoids session mismatch issues)
     user = db.query(models.User).filter(
         models.User.id == current_user.id
     ).first()
@@ -107,6 +131,7 @@ def update_profile(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    # Update only provided fields
     if update.name is not None:
         user.name = update.name
 
@@ -133,6 +158,7 @@ def upload_profile_picture(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Fetch user in current session
     user = db.query(models.User).filter(
         models.User.id == current_user.id
     ).first()
@@ -140,14 +166,17 @@ def upload_profile_picture(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    # Ensure upload directory exists
     upload_dir = "app/static/profile_pics"
     os.makedirs(upload_dir, exist_ok=True)
 
+    # Save file with user-specific naming
     file_path = f"{upload_dir}/{user.id}_{file.filename}"
 
     with open(file_path, "wb") as f:
         f.write(file.file.read())
 
+    # Store accessible path in DB
     user.profile_picture = f"/static/profile_pics/{user.id}_{file.filename}"
 
     db.commit()
@@ -166,13 +195,19 @@ def change_password(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Fetch user in current session
     user = db.query(models.User).filter(
         models.User.id == current_user.id
     ).first()
 
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Verify old password before allowing change
     if not verify_password(data.old_password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect old password")
 
+    # Update to new hashed password
     user.hashed_password = hash_password(data.new_password)
 
     db.commit()

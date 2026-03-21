@@ -1,78 +1,54 @@
+# =========================
+# IMPORTS
+# =========================
+
 import random
-import pandas as pd
 import string
+import pandas as pd
+
+
+# =========================
+# CONFIG
+# =========================
 
 rows = []
 
-# ==============================
+
+# =========================
 # REAL MERCHANT PATTERNS
-# ==============================
+# =========================
 
 merchant_rules = {
     "Food": [
-        "zomato",
-        "swiggy",
-        "restaurant",
-        "cafe",
-        "bbnow",
-        "bigbasket"
+        "zomato", "swiggy", "restaurant", "cafe", "bbnow", "bigbasket"
     ],
-
     "Transport": [
-        "uber",
-        "ola",
-        "fuel",
-        "petrol"
+        "uber", "ola", "fuel", "petrol"
     ],
-
     "Shopping": [
-        "amazon",
-        "flipkart",
-        "store",
-        "mall"
+        "amazon", "flipkart", "store", "mall"
     ],
-
     "Healthcare": [
-        "apollo",
-        "medplus",
-        "hospital",
-        "pharmacy"
+        "apollo", "medplus", "hospital", "pharmacy"
     ],
-
     "Utilities": [
-        "electricity",
-        "billpay",
-        "internet",
-        "mobile recharge",
-        "gas bill"
+        "electricity", "billpay", "internet", "mobile recharge", "gas bill"
     ],
-
     "Entertainment": [
-        "netflix",
-        "spotify",
-        "gaming",
-        "bookmyshow"
+        "netflix", "spotify", "gaming", "bookmyshow"
     ],
-
     "Income": [
-        "salary",
-        "sparrkle technologies",
-        "bonus",
-        "credit"
+        "salary", "sparrkle technologies", "bonus", "credit"
     ],
-
     "Transfers": [
-        "upi",
-        "imps",
-        "neft",
-        "transfer",
-        "payment from phone"
+        "upi", "imps", "neft", "transfer", "payment from phone"
     ]
 }
 
-# ==============================
-# REALISTIC TRANSACTION FORMATS
-# ==============================
+
+# =========================
+# TRANSACTION FORMATS
+# =========================
 
 formats = [
     "UPI-{merchant}-PAYMENT",
@@ -84,24 +60,24 @@ formats = [
     "UPI-{merchant}-PAYMENT FROM PHONE"
 ]
 
-# ==============================
-# RANDOM HELPERS
-# ==============================
+
+# =========================
+# HELPER FUNCTIONS
+# =========================
 
 def random_digits(n=6):
     return ''.join(random.choices(string.digits, k=n))
 
 
-# ==============================
-# GENERATE DATASET
-# ==============================
+# =========================
+# DATA GENERATION
+# =========================
 
 for category, merchants in merchant_rules.items():
 
     for _ in range(300):
 
         merchant = random.choice(merchants).upper()
-
         fmt = random.choice(formats)
 
         description = fmt.format(
@@ -115,14 +91,19 @@ for category, merchants in merchant_rules.items():
         })
 
 
-# ==============================
-# ADD SOME NOISE
-# ==============================
+# =========================
+# ADD NOISE (SIMULATE REAL DATA)
+# =========================
 
 for row in rows:
+
     if random.random() < 0.02:
         row["category"] = random.choice(list(merchant_rules.keys()))
 
+
+# =========================
+# EXPORT DATASET
+# =========================
 
 df = pd.DataFrame(rows)
 

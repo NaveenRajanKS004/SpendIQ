@@ -1,6 +1,12 @@
+# =========================
+# IMPORTS
+# =========================
+
 from datetime import datetime, timedelta
+
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -13,7 +19,10 @@ from . import models
 # PASSWORD HASHING
 # =========================
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
 
 
 def hash_password(password: str):
@@ -32,6 +41,7 @@ SECRET_KEY = "change_this_to_a_random_secure_string"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+# OAuth2 scheme (used by FastAPI dependency system)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
@@ -51,7 +61,10 @@ def get_db():
 # TOKEN CREATION
 # =========================
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(
+    data: dict,
+    expires_delta: timedelta | None = None
+):
 
     to_encode = data.copy()
 
@@ -65,7 +78,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 
 # =========================
-# CURRENT USER
+# GET CURRENT USER
 # =========================
 
 def get_current_user(
@@ -80,7 +93,7 @@ def get_current_user(
     )
 
     try:
-
+        # Decode JWT
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
         user_id: str = payload.get("sub")
@@ -91,6 +104,7 @@ def get_current_user(
     except JWTError:
         raise credentials_exception
 
+    # Fetch user from DB
     user = db.query(models.User).filter(
         models.User.id == int(user_id)
     ).first()

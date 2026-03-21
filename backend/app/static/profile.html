@@ -2,27 +2,46 @@
 <html>
 
 <head>
+
     <title>Profile</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+
 </head>
 
 <body>
+
+<!-- =========================
+     MAIN CONTAINER
+========================= -->
 
 <div class="container">
 
     <h2>My Profile</h2>
 
+
+    <!-- =========================
+         PROFILE CARD
+    ========================= -->
+
     <div class="profile-card">
 
         <!-- LEFT: PROFILE IMAGE -->
         <div class="profile-left">
-            <img id="profilePic" src="/static/assets/logo-primary.svg" class="profile-img">
+
+            <img id="profilePic"
+                 src="/static/assets/logo-primary.svg"
+                 class="profile-img">
 
             <input type="file" id="picUpload" hidden>
-            <button onclick="triggerUpload()">Change Picture</button>
+
+            <button onclick="triggerUpload()">
+                Change Picture
+            </button>
+
         </div>
 
-        <!-- RIGHT: DETAILS -->
+
+        <!-- RIGHT: USER DETAILS -->
         <div class="profile-right">
 
             <p><strong>Name:</strong> <span id="name"></span></p>
@@ -34,7 +53,11 @@
 
     </div>
 
-    <!-- UPDATE PROFILE -->
+
+    <!-- =========================
+         UPDATE PROFILE SECTION
+    ========================= -->
+
     <div class="profile-section">
 
         <h3>Update Profile</h3>
@@ -43,11 +66,17 @@
         <input id="newPhone" placeholder="Phone Number">
         <input id="newDob" type="date">
 
-        <button class="upload-btn" onclick="updateProfile()">Save Changes</button>
+        <button class="upload-btn" onclick="updateProfile()">
+            Save Changes
+        </button>
 
     </div>
 
-    <!-- CHANGE PASSWORD -->
+
+    <!-- =========================
+         CHANGE PASSWORD SECTION
+    ========================= -->
+
     <div class="profile-section">
 
         <h3>Change Password</h3>
@@ -55,11 +84,18 @@
         <input id="oldPassword" type="password" placeholder="Old Password">
         <input id="newPassword" type="password" placeholder="New Password">
 
-        <button class="logout-btn" onclick="changePassword()">Change Password</button>
+        <button class="logout-btn" onclick="changePassword()">
+            Change Password
+        </button>
 
     </div>
 
 </div>
+
+
+<!-- =========================
+     SCRIPT
+========================= -->
 
 <script src="/static/js/profile.js"></script>
 

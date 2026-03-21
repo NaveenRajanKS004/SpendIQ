@@ -2,18 +2,29 @@
 <html>
 
 <head>
+
     <title>Register</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+
 </head>
 
 <body class="auth-body">
 
+<!-- =========================
+     AUTH CONTAINER
+========================= -->
+
 <div class="auth-container">
 
+    <!-- LOGO -->
     <img src="/static/assets/logo-primary.svg" class="auth-logo">
 
+
+    <!-- TITLE -->
     <h2>Create Account</h2>
 
+
+    <!-- USER INPUTS -->
     <input id="name" type="text" placeholder="Full Name">
 
     <input id="email" type="email" placeholder="Email">
@@ -24,14 +35,23 @@
 
     <input id="password" type="password" placeholder="Password">
 
+
+    <!-- ACTION -->
     <button onclick="register()">Create Account</button>
 
+
+    <!-- NAVIGATION -->
     <p>
         Already have an account?
         <a href="/login-page">Login</a>
     </p>
 
 </div>
+
+
+<!-- =========================
+     SCRIPT
+========================= -->
 
 <script src="/static/js/register.js"></script>
 

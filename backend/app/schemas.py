@@ -1,3 +1,7 @@
+# =========================
+# IMPORTS
+# =========================
+
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
@@ -5,7 +9,7 @@ from enum import Enum
 
 
 # =========================
-# ALLOWED CATEGORIES ENUM
+# ENUMS
 # =========================
 
 class AllowedCategory(str, Enum):
@@ -37,7 +41,7 @@ class UserResponse(BaseModel):
     email: EmailStr
     phone: Optional[str]
     date_of_birth: Optional[str]
-    profile_picture: Optional[str]  # ✅ NEW
+    profile_picture: Optional[str]
 
     class Config:
         from_attributes = True
@@ -62,7 +66,7 @@ class TransactionCreate(BaseModel):
     amount: float
     category: AllowedCategory
     description: Optional[str] = None
-    transaction_type: str
+    transaction_type: str  # income / expense
 
 
 class TransactionResponse(BaseModel):
@@ -78,7 +82,7 @@ class TransactionResponse(BaseModel):
 
 
 # =========================
-# CATEGORY CORRECTION SCHEMA
+# CATEGORY CORRECTION
 # =========================
 
 class CategoryCorrection(BaseModel):
@@ -86,13 +90,13 @@ class CategoryCorrection(BaseModel):
 
 
 # =========================
-# BUDGET SCHEMA
+# BUDGET SCHEMAS
 # =========================
 
 class BudgetCreate(BaseModel):
     category: str
     amount: float
-    month: str
+    month: str  # format: YYYY-MM
 
 
 class BudgetResponse(BaseModel):

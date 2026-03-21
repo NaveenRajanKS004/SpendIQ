@@ -1,9 +1,14 @@
+// =========================
+// CONFIG & AUTH
+// =========================
+
 const API = "http://127.0.0.1:8000"
 const token = localStorage.getItem("token")
 
 const headers = {
     "Authorization": "Bearer " + token
 }
+
 
 // =========================
 // LOAD PROFILE
@@ -20,6 +25,7 @@ async function loadProfile() {
 
     const data = await res.json()
 
+    // Basic info
     document.getElementById("name").innerText = data.name
     document.getElementById("email").innerText = data.email
     document.getElementById("phone").innerText = data.phone || "-"
@@ -29,7 +35,7 @@ async function loadProfile() {
         document.getElementById("profilePic").src = data.profile_picture
     }
 
-    // Age calculation
+    // Age calculation from DOB
     if (data.date_of_birth) {
         const dob = new Date(data.date_of_birth)
         const age = new Date().getFullYear() - dob.getFullYear()
@@ -75,7 +81,7 @@ async function updateProfile() {
 
 
 // =========================
-// PROFILE PICTURE
+// PROFILE PICTURE UPLOAD
 // =========================
 
 function triggerUpload() {
@@ -87,7 +93,7 @@ document.getElementById("picUpload").addEventListener("change", async function (
     const file = this.files[0]
     if (!file) return
 
-    // Preview instantly
+    // Instant preview (UX improvement)
     const preview = URL.createObjectURL(file)
     document.getElementById("profilePic").src = preview
 
@@ -139,6 +145,8 @@ async function changePassword() {
 }
 
 
+// =========================
+// INITIAL LOAD
 // =========================
 
 loadProfile()

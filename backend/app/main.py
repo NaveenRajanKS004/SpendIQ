@@ -1,3 +1,7 @@
+# =========================
+# IMPORTS
+# =========================
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -11,12 +15,32 @@ from .routers import analytics
 from .routers import budgets
 from .routers import intelligence
 
+
+# =========================
+# DATABASE INIT
+# =========================
+
+# Create tables
 models.Base.metadata.create_all(bind=engine)
+
+
+# =========================
+# APP INIT
+# =========================
 
 app = FastAPI(title="SpendIQ API")
 
+
+# =========================
+# STATIC FILES
+# =========================
+
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+
+# =========================
+# BASIC ROUTES (PAGES)
+# =========================
 
 @app.get("/")
 def root():
@@ -42,13 +66,13 @@ def serve_dashboard():
 def serve_profile():
     return FileResponse("app/static/profile.html")
 
+
+# =========================
+# API ROUTERS
+# =========================
+
 app.include_router(auth.router, tags=["Auth"])
 app.include_router(transactions.router, tags=["Transactions"])
 app.include_router(analytics.router, tags=["Analytics"])
 app.include_router(budgets.router, tags=["Budgets"])
 app.include_router(intelligence.router, tags=["Intelligence"])
-
-
-
-
-#uvicorn app.main:app --reload

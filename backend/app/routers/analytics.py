@@ -6,6 +6,10 @@ from .. import models
 from ..security import get_current_user
 
 
+# This router handles all analytics-related endpoints:
+# - summaries (overall, category, monthly, yearly)
+# - insights
+# - detailed analytics views
 router = APIRouter()
 
 
@@ -27,6 +31,7 @@ def get_summary(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Fetch all transactions for the current user
     transactions = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id
     ).all()
@@ -34,6 +39,7 @@ def get_summary(
     total_income = 0
     total_expense = 0
 
+    # transaction_type is expected to be "income" or "expense"
     for txn in transactions:
 
         if txn.transaction_type == "income":
@@ -59,6 +65,7 @@ def get_category_summary(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Fetch only expense transactions for category breakdown
     transactions = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id,
         models.Transaction.transaction_type == "expense"
@@ -84,6 +91,7 @@ def get_monthly_summary(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Fetch all transactions for the current user
     transactions = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id
     ).all()
@@ -92,6 +100,7 @@ def get_monthly_summary(
 
     for txn in transactions:
 
+        # Group transactions by month (YYYY-MM)
         month_key = txn.created_at.strftime("%Y-%m")
 
         if month_key not in monthly_data:
@@ -107,6 +116,7 @@ def get_monthly_summary(
         elif txn.transaction_type == "expense":
             monthly_data[month_key]["expense"] += txn.amount
 
+        # Update balance dynamically
         monthly_data[month_key]["balance"] = (
             monthly_data[month_key]["income"]
             - monthly_data[month_key]["expense"]
@@ -125,6 +135,7 @@ def get_yearly_summary(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Fetch all transactions for the current user
     transactions = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id
     ).all()
@@ -133,6 +144,7 @@ def get_yearly_summary(
 
     for txn in transactions:
 
+        # Group transactions by year (YYYY)
         year_key = txn.created_at.strftime("%Y")
 
         if year_key not in yearly_data:
@@ -166,6 +178,7 @@ def get_insights(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Fetch all transactions for the current user
     transactions = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id
     ).all()
@@ -179,9 +192,11 @@ def get_insights(
 
         if txn.transaction_type == "expense":
 
+            # Track highest single expense
             if txn.amount > highest_expense:
                 highest_expense = txn.amount
 
+            # Aggregate spending per category
             category_totals[txn.category] = (
                 category_totals.get(txn.category, 0) + txn.amount
             )
@@ -209,6 +224,7 @@ def get_yearly_analytics(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Fetch all transactions for the current user
     transactions = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id
     ).all()
@@ -222,9 +238,11 @@ def get_yearly_analytics(
 
     for txn in transactions:
 
+        # Skip transactions not in requested year
         if txn.created_at.year != year:
             continue
 
+        # Convert month (1-12) → index (0-11)
         month_index = txn.created_at.month - 1
 
         if txn.transaction_type == "income":
@@ -237,6 +255,7 @@ def get_yearly_analytics(
             monthly_expense[month_index] += txn.amount
             total_expense += txn.amount
 
+            # Aggregate category totals for expenses
             category_totals[txn.category] = (
                 category_totals.get(txn.category, 0) + txn.amount
             )
@@ -263,6 +282,7 @@ def get_monthly_analytics(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    # Fetch all transactions for the current user
     transactions = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id
     ).all()
@@ -274,6 +294,7 @@ def get_monthly_analytics(
 
     for txn in transactions:
 
+        # Skip transactions outside requested period
         if txn.created_at.year != year:
             continue
 
@@ -285,12 +306,14 @@ def get_monthly_analytics(
         else:
             total_expense += txn.amount
 
+            # Aggregate category totals for expenses
             category_totals[txn.category] = (
                 category_totals.get(txn.category, 0) + txn.amount
             )
 
+        # Include transaction details for frontend display
         month_transactions.append({
-            "id": txn.id,  # ✅ FIX: required for correction
+            "id": txn.id,  # Required for correction flow
             "date": txn.created_at.strftime("%Y-%m-%d"),
             "category": txn.category,
             "description": txn.description,
