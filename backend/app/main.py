@@ -38,6 +38,10 @@ def serve_dashboard():
     return FileResponse("app/static/dashboard.html")
 
 
+@app.get("/profile")
+def serve_profile():
+    return FileResponse("app/static/profile.html")
+
 app.include_router(auth.router, tags=["Auth"])
 app.include_router(transactions.router, tags=["Transactions"])
 app.include_router(analytics.router, tags=["Analytics"])

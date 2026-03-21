@@ -1,24 +1,47 @@
-<body class="auth-body">
+<!DOCTYPE html>
+<html>
 
-<div class="auth-container">
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
 
-<img src="/static/assets/logo-primary.svg" class="auth-logo">
+<body>
 
-<h2>Create Account</h2>
+<div class="auth-wrapper">
 
-<input id="email" type="email" placeholder="Email">
+    <!-- LEFT PANEL -->
+    <div class="auth-left">
+        <img src="/static/assets/logo-primary.svg" class="auth-logo-large">
+        <h1>SpendIQ</h1>
+        <p>Track. Analyze. Optimize your finances.</p>
+    </div>
 
-<input id="password" type="password" placeholder="Password">
+    <!-- RIGHT PANEL -->
+    <div class="auth-right">
 
-<button onclick="register()">Register</button>
+        <div class="auth-box">
 
-<p>
-Already have an account?
-<a href="/login-page">Login</a>
-</p>
+            <h2>Create Account</h2>
+
+            <input id="name" type="text" placeholder="Full Name">
+            <input id="email" type="email" placeholder="Email">
+            <input id="password" type="password" placeholder="Password">
+
+            <button onclick="register()">Create Account</button>
+
+            <p>
+                Already have an account?
+                <a href="/login-page">Login</a>
+            </p>
+
+        </div>
+
+    </div>
 
 </div>
 
 <script src="/static/js/register.js"></script>
 
 </body>
+</html>

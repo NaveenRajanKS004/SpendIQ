@@ -23,6 +23,7 @@ class AllowedCategory(str, Enum):
 # =========================
 
 class UserCreate(BaseModel):
+    name: str
     email: EmailStr
     password: str
 
@@ -83,3 +84,7 @@ class BudgetResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None

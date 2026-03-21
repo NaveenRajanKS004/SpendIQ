@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -407,4 +411,120 @@ button {
 
 .auth-container button:hover {
     background: #1D4ED8;
+}
+
+
+/* =========================
+   AUTH SPLIT LAYOUT (NEW)
+========================= */
+
+.auth-wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+/* LEFT SIDE */
+
+.auth-left {
+    flex: 1;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a, #1d4ed8);
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    padding: 40px;
+}
+
+.auth-logo-large {
+    width: 120px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 4px 12px rgba(255,255,255,0.3));
+}
+
+.auth-left h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.auth-left p {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* RIGHT SIDE */
+
+.auth-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f9fafb;
+}
+
+/* FORM BOX */
+
+.auth-box {
+    width: 100%;
+    max-width: 380px;
+    background: white;
+    padding: 40px;
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* INPUTS */
+
+.auth-box input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 14px;
+
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+
+    font-size: 14px;
+    display: block;
+}
+
+/* BUTTON */
+
+.auth-box button {
+    width: 100%;
+    padding: 14px;
+
+    background: #2563EB;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    transition: 0.2s;
+    display: block;
+}
+
+.auth-box button:hover {
+    background: #1D4ED8;
+}
+
+/* LINKS */
+
+.auth-box p {
+    margin-top: 15px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.auth-box a {
+    color: #2563EB;
+    text-decoration: none;
+    font-weight: 600;
 }

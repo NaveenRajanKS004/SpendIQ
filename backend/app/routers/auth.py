@@ -31,6 +31,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     hashed_pw = hash_password(user.password)
 
     new_user = models.User(
+        name=user.name,
         email=user.email,
         hashed_password=hashed_pw
     )
@@ -66,8 +67,29 @@ def login(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/me", response_model=schemas.UserResponse)
+@router.get("/me")
 def read_current_user(
     current_user: models.User = Depends(get_current_user)
 ):
-    return current_user
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": current_user.name
+    }
+
+
+
+@router.put("/profile")
+def update_profile(
+    update: schemas.UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    if update.name is not None:
+        current_user.name = update.name
+
+    db.commit()
+    db.refresh(current_user)
+
+    return {"message": "Profile updated"}
