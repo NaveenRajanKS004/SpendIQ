@@ -47,3 +47,8 @@ app.include_router(transactions.router, tags=["Transactions"])
 app.include_router(analytics.router, tags=["Analytics"])
 app.include_router(budgets.router, tags=["Budgets"])
 app.include_router(intelligence.router, tags=["Intelligence"])
+
+
+
+
+#uvicorn app.main:app --reload

@@ -6,38 +6,30 @@
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
-<body>
+<body class="auth-body">
 
-<div class="auth-wrapper">
+<div class="auth-container">
 
-    <!-- LEFT PANEL -->
-    <div class="auth-left">
-        <img src="/static/assets/logo-primary.svg" class="auth-logo-large">
-        <h1>SpendIQ</h1>
-        <p>Track. Analyze. Optimize your finances.</p>
-    </div>
+    <img src="/static/assets/logo-primary.svg" class="auth-logo">
 
-    <!-- RIGHT PANEL -->
-    <div class="auth-right">
+    <h2>Create Account</h2>
 
-        <div class="auth-box">
+    <input id="name" type="text" placeholder="Full Name">
 
-            <h2>Create Account</h2>
+    <input id="email" type="email" placeholder="Email">
 
-            <input id="name" type="text" placeholder="Full Name">
-            <input id="email" type="email" placeholder="Email">
-            <input id="password" type="password" placeholder="Password">
+    <input id="phone" type="text" placeholder="Phone Number">
 
-            <button onclick="register()">Create Account</button>
+    <input id="dob" type="date">
 
-            <p>
-                Already have an account?
-                <a href="/login-page">Login</a>
-            </p>
+    <input id="password" type="password" placeholder="Password">
 
-        </div>
+    <button onclick="register()">Create Account</button>
 
-    </div>
+    <p>
+        Already have an account?
+        <a href="/login-page">Login</a>
+    </p>
 
 </div>
 

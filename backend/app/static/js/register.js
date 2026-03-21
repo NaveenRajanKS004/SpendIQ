@@ -4,6 +4,8 @@ async function register() {
 
     const name = document.getElementById("name").value
     const email = document.getElementById("email").value
+    const phone = document.getElementById("phone").value
+    const dob = document.getElementById("dob").value
     const password = document.getElementById("password").value
 
     const res = await fetch(`${API}/register`, {
@@ -14,6 +16,8 @@ async function register() {
         body: JSON.stringify({
             name,
             email,
+            phone,
+            date_of_birth: dob,
             password
         })
     })
@@ -22,6 +26,7 @@ async function register() {
         alert("Account created. Please login.")
         window.location.href = "/login-page"
     } else {
-        alert("Registration failed")
+        const err = await res.json()
+        alert(err.detail || "Registration failed")
     }
 }

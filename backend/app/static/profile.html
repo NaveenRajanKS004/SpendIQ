@@ -6,18 +6,58 @@
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
-<body class="auth-body">
+<body>
 
-<div class="auth-container">
+<div class="container">
 
-    <h2>Profile</h2>
+    <h2>My Profile</h2>
 
-    <input id="name" placeholder="Your name">
+    <div class="profile-card">
 
-    <button onclick="saveProfile()">Save</button>
+        <!-- LEFT: PROFILE IMAGE -->
+        <div class="profile-left">
+            <img id="profilePic" src="/static/assets/logo-primary.svg" class="profile-img">
 
-    <br><br>
-    <button onclick="window.location.href='/dashboard'">Back</button>
+            <input type="file" id="picUpload" hidden>
+            <button onclick="triggerUpload()">Change Picture</button>
+        </div>
+
+        <!-- RIGHT: DETAILS -->
+        <div class="profile-right">
+
+            <p><strong>Name:</strong> <span id="name"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+            <p><strong>Phone:</strong> <span id="phone"></span></p>
+            <p><strong>Age:</strong> <span id="age"></span></p>
+
+        </div>
+
+    </div>
+
+    <!-- UPDATE PROFILE -->
+    <div class="profile-section">
+
+        <h3>Update Profile</h3>
+
+        <input id="newName" placeholder="New Name">
+        <input id="newPhone" placeholder="Phone Number">
+        <input id="newDob" type="date">
+
+        <button class="upload-btn" onclick="updateProfile()">Save Changes</button>
+
+    </div>
+
+    <!-- CHANGE PASSWORD -->
+    <div class="profile-section">
+
+        <h3>Change Password</h3>
+
+        <input id="oldPassword" type="password" placeholder="Old Password">
+        <input id="newPassword" type="password" placeholder="New Password">
+
+        <button class="logout-btn" onclick="changePassword()">Change Password</button>
+
+    </div>
 
 </div>
 

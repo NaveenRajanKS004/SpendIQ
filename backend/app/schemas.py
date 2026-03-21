@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 from enum import Enum
 
+
 # =========================
 # ALLOWED CATEGORIES ENUM
 # =========================
@@ -26,14 +27,31 @@ class UserCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
 
 
 class UserResponse(BaseModel):
     id: int
+    name: str
     email: EmailStr
+    phone: Optional[str]
+    date_of_birth: Optional[str]
+    profile_picture: Optional[str]  # ✅ NEW
 
     class Config:
         from_attributes = True
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+
+
+class ChangePassword(BaseModel):
+    old_password: str
+    new_password: str
 
 
 # =========================
@@ -44,7 +62,7 @@ class TransactionCreate(BaseModel):
     amount: float
     category: AllowedCategory
     description: Optional[str] = None
-    transaction_type: str  # income or expense
+    transaction_type: str
 
 
 class TransactionResponse(BaseModel):
@@ -66,6 +84,7 @@ class TransactionResponse(BaseModel):
 class CategoryCorrection(BaseModel):
     category: AllowedCategory
 
+
 # =========================
 # BUDGET SCHEMA
 # =========================
@@ -83,8 +102,4 @@ class BudgetResponse(BaseModel):
     month: str
 
     class Config:
-        orm_mode = True
-
-
-class UserUpdate(BaseModel):
-    name: Optional[str] = None
+        from_attributes = True

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
+import os
 
 from ..database import SessionLocal
 from .. import models, schemas
@@ -18,6 +19,10 @@ def get_db():
         db.close()
 
 
+# =========================
+# REGISTER
+# =========================
+
 @router.post("/register", response_model=schemas.UserResponse)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
@@ -33,6 +38,8 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     new_user = models.User(
         name=user.name,
         email=user.email,
+        phone=user.phone,
+        date_of_birth=user.date_of_birth,
         hashed_password=hashed_pw
     )
 
@@ -42,6 +49,10 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
     return new_user
 
+
+# =========================
+# LOGIN
+# =========================
 
 @router.post("/login")
 def login(
@@ -67,17 +78,20 @@ def login(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/me")
+# =========================
+# GET CURRENT USER
+# =========================
+
+@router.get("/me", response_model=schemas.UserResponse)
 def read_current_user(
     current_user: models.User = Depends(get_current_user)
 ):
-    return {
-        "id": current_user.id,
-        "email": current_user.email,
-        "name": current_user.name
-    }
+    return current_user
 
 
+# =========================
+# UPDATE PROFILE
+# =========================
 
 @router.put("/profile")
 def update_profile(
@@ -86,10 +100,81 @@ def update_profile(
     current_user: models.User = Depends(get_current_user)
 ):
 
+    user = db.query(models.User).filter(
+        models.User.id == current_user.id
+    ).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     if update.name is not None:
-        current_user.name = update.name
+        user.name = update.name
+
+    if update.phone is not None:
+        user.phone = update.phone
+
+    if update.date_of_birth is not None:
+        user.date_of_birth = update.date_of_birth
 
     db.commit()
-    db.refresh(current_user)
+    db.refresh(user)
 
-    return {"message": "Profile updated"}
+    return {"message": "Profile updated successfully"}
+
+
+# =========================
+# UPLOAD PROFILE PICTURE
+# =========================
+
+@router.post("/profile/upload-picture")
+def upload_profile_picture(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    user = db.query(models.User).filter(
+        models.User.id == current_user.id
+    ).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    upload_dir = "app/static/profile_pics"
+    os.makedirs(upload_dir, exist_ok=True)
+
+    file_path = f"{upload_dir}/{user.id}_{file.filename}"
+
+    with open(file_path, "wb") as f:
+        f.write(file.file.read())
+
+    user.profile_picture = f"/static/profile_pics/{user.id}_{file.filename}"
+
+    db.commit()
+
+    return {"profile_picture": user.profile_picture}
+
+
+# =========================
+# CHANGE PASSWORD
+# =========================
+
+@router.put("/change-password")
+def change_password(
+    data: schemas.ChangePassword,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    user = db.query(models.User).filter(
+        models.User.id == current_user.id
+    ).first()
+
+    if not verify_password(data.old_password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect old password")
+
+    user.hashed_password = hash_password(data.new_password)
+
+    db.commit()
+
+    return {"message": "Password updated successfully"}

@@ -198,7 +198,9 @@ def get_insights(
     }
 
 
-
+# =========================
+# YEARLY ANALYTICS
+# =========================
 
 @router.get("/analytics/yearly")
 def get_yearly_analytics(
@@ -240,23 +242,18 @@ def get_yearly_analytics(
             )
 
     return {
-
         "income": total_income,
-
         "expense": total_expense,
-
         "balance": total_income - total_expense,
-
         "monthly_income": monthly_income,
-
         "monthly_expense": monthly_expense,
-
         "category_totals": category_totals
-
     }
 
 
-
+# =========================
+# MONTHLY ANALYTICS
+# =========================
 
 @router.get("/analytics/monthly")
 def get_monthly_analytics(
@@ -284,11 +281,8 @@ def get_monthly_analytics(
             continue
 
         if txn.transaction_type == "income":
-
             total_income += txn.amount
-
         else:
-
             total_expense += txn.amount
 
             category_totals[txn.category] = (
@@ -296,6 +290,7 @@ def get_monthly_analytics(
             )
 
         month_transactions.append({
+            "id": txn.id,  # ✅ FIX: required for correction
             "date": txn.created_at.strftime("%Y-%m-%d"),
             "category": txn.category,
             "description": txn.description,
@@ -304,15 +299,9 @@ def get_monthly_analytics(
         })
 
     return {
-
         "income": total_income,
-
         "expense": total_expense,
-
         "balance": total_income - total_expense,
-
         "category_totals": category_totals,
-
         "transactions": month_transactions
-
     }
