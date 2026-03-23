@@ -6,6 +6,10 @@
     box-sizing: border-box;
 }
 
+* {
+    transition: all 0.15s ease;
+}
+upgrade .insights
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -113,7 +117,7 @@ button {
 
 
 /* =========================
-   SUMMARY CARDS
+   SUMMARY CARDS (UPGRADED)
 ========================= */
 
 .cards {
@@ -122,30 +126,105 @@ button {
     margin-bottom: 30px;
 }
 
+
+/* CARD BASE */
+
 .card {
     flex: 1;
     padding: 22px;
     background: white;
-    border-radius: 12px;
+    border-radius: 14px;
+
+    position: relative;
+    overflow: hidden;
 
     box-shadow:
-        0 1px 2px rgba(0,0,0,0.05),
-        0 4px 12px rgba(0,0,0,0.05);
+        0 4px 12px rgba(0,0,0,0.05),
+        0 10px 25px rgba(0,0,0,0.05);
 
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: all 0.25s ease;
+    cursor: pointer;
 }
+
+
+/* HOVER EFFECT (BIG IMPACT) */
 
 .card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.01);
 
     box-shadow:
-        0 4px 8px rgba(0,0,0,0.08),
-        0 10px 20px rgba(0,0,0,0.08);
+        0 10px 25px rgba(0,0,0,0.1),
+        0 20px 40px rgba(0,0,0,0.1);
 }
 
+
+/* GLOW ACCENT STRIP */
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 4px;
+
+    background: linear-gradient(
+        90deg,
+        #2563EB,
+        #22C55E
+    );
+}
+
+
+/* TITLE */
+
+.card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+
+/* VALUE */
+
 .card p {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
+    color: #111827;
+}
+
+
+/* OPTIONAL COLOR THEMES */
+
+.card.income::before {
+    background: linear-gradient(90deg, #16a34a, #22C55E);
+}
+
+.card.expense::before {
+    background: linear-gradient(90deg, #DC2626, #EF4444);
+}
+
+.card.balance::before {
+    background: linear-gradient(90deg, #2563EB, #2563EB);
+}
+
+
+/* SMALL TREND TEXT */
+
+.trend {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.trend.up {
+    color: #DC2626;
+}
+
+.trend.down {
+    color: #16a34a;
 }
 
 
@@ -234,12 +313,12 @@ button {
 .budget-progress {
     height: 100%;
     border-radius: 8px;
-    background: linear-gradient(90deg, #2563EB, #22c55e);
+    background: linear-gradient(90deg, #2563EB, #22C55E);
 }
 
 .budget-progress.green { background: #16a34a; }
 .budget-progress.yellow { background: #f59e0b; }
-.budget-progress.red { background: #dc2626; }
+.budget-progress.red { background: #DC2626; }
 
 
 /* =========================
@@ -361,7 +440,7 @@ button {
 
     height: 100vh;
 
-    background: linear-gradient(135deg, #1E3A8A, #2563EB, #22c55e);
+    background: linear-gradient(135deg, #1E3A8A, #2563EB, #22C55E);
 }
 
 .auth-container {
@@ -491,7 +570,7 @@ button {
         135deg,
         #1E3A8A,
         #2563EB,
-        #22c55e
+        #22C55E
     );
 
     font-family: Arial, sans-serif;
@@ -550,7 +629,7 @@ button {
     bottom: 5px;
     right: 5px;
 
-    background: #6366f1;
+    background: #2563EB;
     color: white;
 
     width: 28px;
@@ -572,7 +651,7 @@ button {
 
 .edit-text {
     font-size: 13px;
-    color: #6366f1;
+    color: #2563EB;
 }
 
 
@@ -625,7 +704,7 @@ button {
     width: 100%;
     padding: 10px;
 
-    background: #ef4444;
+    background: #EF4444;
     color: white;
 
     border: none;
@@ -636,7 +715,7 @@ button {
 }
 
 .profile-password button:hover {
-    background: #dc2626;
+    background: #DC2626;
 }
 
 
@@ -652,4 +731,81 @@ button {
     padding: 4px;
     border-radius: 6px;
     border: 1px solid #ccc;
+}
+
+
+/* =========================
+   PREMIUM INSIGHTS
+========================= */
+
+.insights {
+    margin-top: 30px;
+}
+
+#insightsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* CARD */
+
+.insight-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 14px;
+
+    border-radius: 10px;
+    background: white;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.05);
+
+    transition: all 0.2s ease;
+}
+
+
+/* HOVER EFFECT */
+
+.insight-card:hover {
+    transform: translateX(4px);
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.08);
+}
+
+
+/* ICON */
+
+.insight-icon {
+    font-size: 18px;
+}
+
+
+/* TEXT */
+
+.insight-text {
+    font-size: 14px;
+    color: #111827;
+}
+
+
+/* COLORS */
+
+.insight-card.success {
+    border-left: 4px solid #22C55E;
+}
+
+.insight-card.danger {
+    border-left: 4px solid #EF4444;
+}
+
+.insight-card.warning {
+    border-left: 4px solid #F59E0B;
+}
+
+.insight-card.info {
+    border-left: 4px solid #2563EB;
 }

@@ -89,6 +89,35 @@ function initYears() {
 
 
 // =========================
+// 🔥 ANIMATED VALUE (NEW)
+// =========================
+
+function animateValue(id, endValue) {
+
+    const el = document.getElementById(id)
+
+    if (!el) return
+
+    let start = 0
+    const duration = 800
+    const stepTime = 16
+
+    const increment = endValue / (duration / stepTime)
+
+    const timer = setInterval(() => {
+        start += increment
+
+        if (start >= endValue) {
+            el.innerText = formatINR(endValue)
+            clearInterval(timer)
+        } else {
+            el.innerText = formatINR(Math.floor(start))
+        }
+    }, stepTime)
+}
+
+
+// =========================
 // YEARLY DASHBOARD
 // =========================
 
@@ -100,10 +129,10 @@ async function loadYearDashboard(year) {
     // Update title
     document.getElementById("dashboardTitle").innerText = `Dashboard — ${year}`
 
-    // Update summary
-    document.getElementById("income").innerText = formatINR(data.income)
-    document.getElementById("expense").innerText = formatINR(data.expense)
-    document.getElementById("balance").innerText = formatINR(data.balance)
+    // 🔥 Animated summary
+    animateValue("income", data.income)
+    animateValue("expense", data.expense)
+    animateValue("balance", data.balance)
 
     // Charts
     drawBarChart(data)
@@ -142,10 +171,10 @@ async function loadMonthDashboard(year, month) {
     document.getElementById("dashboardTitle").innerText =
         `Dashboard — ${monthNames[month - 1]} ${year}`
 
-    // Update summary
-    document.getElementById("income").innerText = formatINR(data.income)
-    document.getElementById("expense").innerText = formatINR(data.expense)
-    document.getElementById("balance").innerText = formatINR(data.balance)
+    // 🔥 Animated summary
+    animateValue("income", data.income)
+    animateValue("expense", data.expense)
+    animateValue("balance", data.balance)
 
     // Charts
     drawCategoryChart(data.category_totals)
