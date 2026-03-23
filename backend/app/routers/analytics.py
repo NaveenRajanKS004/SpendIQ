@@ -294,26 +294,29 @@ def get_monthly_analytics(
 
     for txn in transactions:
 
-        # Skip transactions outside requested period
+        # Filter by selected year/month
         if txn.created_at.year != year:
             continue
 
         if txn.created_at.month != month:
             continue
 
-        if txn.transaction_type == "income":
+        # Always compute totals (important!)
+        if txn.transaction_type.lower() == "income":
             total_income += txn.amount
         else:
             total_expense += txn.amount
 
-            # Aggregate category totals for expenses
             category_totals[txn.category] = (
                 category_totals.get(txn.category, 0) + txn.amount
             )
 
-        # Include transaction details for frontend display
+        # 🔥 ONLY ADD EXPENSES TO TABLE
+        if txn.transaction_type.lower() != "expense":
+            continue
+
         month_transactions.append({
-            "id": txn.id,  # Required for correction flow
+            "id": txn.id,
             "date": txn.created_at.strftime("%Y-%m-%d"),
             "category": txn.category,
             "description": txn.description,

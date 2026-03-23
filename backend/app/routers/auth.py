@@ -108,7 +108,6 @@ def login(
 def read_current_user(
     current_user: models.User = Depends(get_current_user)
 ):
-    # Directly return authenticated user
     return current_user
 
 

@@ -476,48 +476,180 @@ button {
 
 
 /* =========================
-   PROFILE PAGE
+   PAGE BACKGROUND
 ========================= */
 
-.profile-card {
+.profile-page {
+    margin: 0;
+    height: 100vh;
+
     display: flex;
-    gap: 30px;
+    justify-content: center;
+    align-items: center;
 
-    padding: 25px;
+    background: linear-gradient(
+        135deg,
+        #1E3A8A,
+        #2563EB,
+        #22c55e
+    );
 
-    background: white;
-    border-radius: 12px;
-
-    box-shadow:
-        0 1px 2px rgba(0,0,0,0.05),
-        0 4px 12px rgba(0,0,0,0.05);
+    font-family: Arial, sans-serif;
 }
 
-.profile-img {
-    width: 120px;
-    height: 120px;
+
+/* =========================
+   CARD WRAPPER
+========================= */
+
+.profile-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+
+/* =========================
+   MAIN CARD
+========================= */
+
+.profile-card-modern {
+    width: 380px;
+    background: white;
+
+    border-radius: 16px;
+    padding: 25px;
+
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.profile-header {
+    text-align: center;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
 
     border-radius: 50%;
     object-fit: cover;
 }
 
-.profile-section {
-    margin-bottom: 20px;
-    padding: 20px;
-
-    background: white;
-    border-radius: 12px;
-
-    box-shadow:
-        0 1px 2px rgba(0,0,0,0.05),
-        0 4px 12px rgba(0,0,0,0.05);
+.avatar-wrapper {
+    position: relative;
+    display: inline-block;
 }
 
-.profile-section input {
+.avatar-edit {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+
+    background: #6366f1;
+    color: white;
+
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+    cursor: pointer;
+
+    font-size: 12px;
+}
+
+.profile-header h2 {
+    margin: 10px 0 5px;
+}
+
+.edit-text {
+    font-size: 13px;
+    color: #6366f1;
+}
+
+
+/* =========================
+   INFO SECTION
+========================= */
+
+.profile-info {
+    margin-top: 15px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 10px 0;
+}
+
+.info-row span:first-child {
+    color: #6b7280;
+}
+
+.info-row span:last-child {
+    font-weight: 500;
+}
+
+
+/* =========================
+   PASSWORD
+========================= */
+
+.profile-password {
+    margin-top: 15px;
+}
+
+.profile-password h3 {
+    margin-bottom: 10px;
+}
+
+.profile-password input {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
 
     border-radius: 8px;
     border: 1px solid #d1d5db;
+}
+
+.profile-password button {
+    width: 100%;
+    padding: 10px;
+
+    background: #ef4444;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.profile-password button:hover {
+    background: #dc2626;
+}
+
+
+/* =========================
+   INLINE EDIT
+========================= */
+
+.editable {
+    cursor: pointer;
+}
+
+.inline-input {
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
 }

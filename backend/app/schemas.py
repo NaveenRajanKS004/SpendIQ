@@ -22,6 +22,9 @@ class AllowedCategory(str, Enum):
     Income = "Income"
     Transfers = "Transfers"
 
+class TransactionType(str, Enum):
+    income = "income"
+    expense = "expense"
 
 # =========================
 # USER SCHEMAS
@@ -66,7 +69,7 @@ class TransactionCreate(BaseModel):
     amount: float
     category: AllowedCategory
     description: Optional[str] = None
-    transaction_type: str  # income / expense
+    transaction_type: TransactionType
 
 
 class TransactionResponse(BaseModel):
@@ -74,7 +77,7 @@ class TransactionResponse(BaseModel):
     amount: float
     category: AllowedCategory
     description: Optional[str]
-    transaction_type: str
+    transaction_type: TransactionType
     created_at: datetime
 
     class Config:

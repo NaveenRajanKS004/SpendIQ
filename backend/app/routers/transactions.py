@@ -19,6 +19,7 @@ from ..services.ml_service import predict_category, retrain_model
 # - CSV uploads
 # - category correction (ML feedback loop)
 # - available months extraction
+
 router = APIRouter()
 
 
@@ -45,20 +46,18 @@ def create_transaction(
     current_user: models.User = Depends(get_current_user)
 ):
 
-    # Normalize description input
     description = (transaction.description or "").strip()
     category = transaction.category
 
-    # Use ML to predict category if not provided
+    # ML fallback (will work after Step 2)
     if not category and description:
         category = predict_category(description.lower())
 
-    # Create new transaction record
     new_transaction = models.Transaction(
         amount=transaction.amount,
         category=category,
         description=description,
-        transaction_type=transaction.transaction_type,
+        transaction_type=transaction.transaction_type.value,  # ✅ ENUM FIX
         user_id=current_user.id,
         created_at=datetime.utcnow()
     )
@@ -83,17 +82,15 @@ def get_transactions(
     current_user: models.User = Depends(get_current_user)
 ):
 
-    # Base query: current user's transactions
     query = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id
     )
 
-    # Filter by month (YYYY-MM)
+    # Month filter
     if month:
         try:
             start_date = datetime.strptime(month, "%Y-%m")
 
-            # Compute next month for range filtering
             if start_date.month == 12:
                 end_date = datetime(start_date.year + 1, 1, 1)
             else:
@@ -115,7 +112,9 @@ def get_transactions(
         query = query.filter(models.Transaction.category == category)
 
     if txn_type:
-        query = query.filter(models.Transaction.transaction_type == txn_type)
+        query = query.filter(
+            models.Transaction.transaction_type == txn_type.lower()
+        )
 
     return query.all()
 
@@ -131,11 +130,9 @@ def upload_transactions_csv(
     current_user: models.User = Depends(get_current_user)
 ):
 
-    # Validate file type
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are allowed")
 
-    # Read CSV content
     content = file.file.read().decode("utf-8")
     csv_reader = csv.DictReader(StringIO(content))
 
@@ -143,32 +140,29 @@ def upload_transactions_csv(
 
     for row in csv_reader:
         try:
-            # Normalize fields
             description = (row.get("description") or "").strip()
             category = (row.get("category") or "").strip()
 
-            # Skip invalid rows
             if not description:
                 continue
 
-            # Use ML if category not provided
             if not category:
                 category = predict_category(description.lower())
 
-            # Parse transaction date if available
             txn_date = None
             if row.get("date"):
                 txn_date = datetime.strptime(row["date"], "%Y-%m-%d")
 
-            # Handle amount (remove commas if present)
             amount = float(str(row.get("amount", 0)).replace(",", ""))
 
-            # Create transaction
+            # ⚠️ TEMP: keep as-is (Step 3 will fix mapping)
+            txn_type = (row.get("transaction_type") or "expense").lower()
+
             new_transaction = models.Transaction(
                 amount=amount,
                 category=category,
                 description=description,
-                transaction_type=row.get("transaction_type", "expense"),
+                transaction_type=txn_type,
                 user_id=current_user.id,
                 created_at=txn_date if txn_date else datetime.utcnow()
             )
@@ -177,7 +171,6 @@ def upload_transactions_csv(
             inserted_count += 1
 
         except Exception as e:
-            # Skip problematic rows but log error
             print("CSV row error:", e)
             continue
 
@@ -190,7 +183,7 @@ def upload_transactions_csv(
 
 
 # =========================
-# CATEGORY CORRECTION (ML FEEDBACK)
+# CATEGORY CORRECTION
 # =========================
 
 @router.put("/transactions/{transaction_id}/correct")
@@ -201,7 +194,6 @@ def correct_transaction_category(
     current_user: models.User = Depends(get_current_user)
 ):
 
-    # Fetch transaction belonging to user
     txn = db.query(models.Transaction).filter(
         models.Transaction.id == transaction_id,
         models.Transaction.user_id == current_user.id
@@ -210,23 +202,19 @@ def correct_transaction_category(
     if not txn:
         raise HTTPException(status_code=404, detail="Transaction not found")
 
-    # Store correction as training feedback
     feedback_path = os.path.join("ml", "user_feedback.csv")
     file_exists = os.path.exists(feedback_path)
 
     with open(feedback_path, "a") as f:
 
-        # Add header if file is new
         if not file_exists:
             f.write("description,category\n")
 
         f.write(f"{txn.description},{correction.category}\n")
 
-    # Update transaction category
     txn.category = correction.category
     db.commit()
 
-    # Trigger model retraining (background)
     retrain_model()
 
     return {
@@ -244,14 +232,12 @@ def get_available_months(
     current_user: models.User = Depends(get_current_user)
 ):
 
-    # Fetch all transactions for user
     transactions = db.query(models.Transaction).filter(
         models.Transaction.user_id == current_user.id
     ).all()
 
     months = set()
 
-    # Extract unique months (YYYY-MM)
     for txn in transactions:
         months.add(txn.created_at.strftime("%Y-%m"))
 

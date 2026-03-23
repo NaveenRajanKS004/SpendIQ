@@ -2,100 +2,70 @@
 <html>
 
 <head>
-
     <title>Profile</title>
     <link rel="stylesheet" href="/static/css/styles.css">
-
 </head>
 
-<body>
+<body class="profile-page">
 
-<!-- =========================
-     MAIN CONTAINER
-========================= -->
+<div class="profile-wrapper">
 
-<div class="container">
+    <div class="profile-card-modern">
 
-    <h2>My Profile</h2>
+        <!-- TOP SECTION -->
+        <div class="profile-header">
 
+            <div class="avatar-wrapper">
+                <img id="profilePic" src="/static/assets/logo-primary.svg" class="profile-avatar">
+                
+                <input type="file" id="picUpload" hidden>
+                <div class="avatar-edit" onclick="triggerUpload()">✏️</div>
+            </div>
 
-    <!-- =========================
-         PROFILE CARD
-    ========================= -->
-
-    <div class="profile-card">
-
-        <!-- LEFT: PROFILE IMAGE -->
-        <div class="profile-left">
-
-            <img id="profilePic"
-                 src="/static/assets/logo-primary.svg"
-                 class="profile-img">
-
-            <input type="file" id="picUpload" hidden>
-
-            <button onclick="triggerUpload()">
-                Change Picture
-            </button>
+            <h2 id="name"></h2>
+            <p class="edit-text">Tap to edit details</p>
 
         </div>
 
+        <hr>
 
-        <!-- RIGHT: USER DETAILS -->
-        <div class="profile-right">
+        <!-- INFO SECTION -->
+        <div class="profile-info">
 
-            <p><strong>Name:</strong> <span id="name"></span></p>
-            <p><strong>Email:</strong> <span id="email"></span></p>
-            <p><strong>Phone:</strong> <span id="phone"></span></p>
-            <p><strong>Age:</strong> <span id="age"></span></p>
+            <div class="info-row">
+                <span>Email</span>
+                <span id="email"></span>
+            </div>
+
+            <div class="info-row">
+                <span>Phone</span>
+                <span class="editable" data-field="phone" id="phone"></span>
+            </div>
+
+            <div class="info-row">
+                <span>Age</span>
+                <span id="age"></span>
+            </div>
 
         </div>
 
-    </div>
+        <hr>
 
+        <!-- PASSWORD -->
+        <div class="profile-password">
 
-    <!-- =========================
-         UPDATE PROFILE SECTION
-    ========================= -->
+            <h3>Change Password</h3>
 
-    <div class="profile-section">
+            <input id="oldPassword" type="password" placeholder="Old Password">
+            <input id="newPassword" type="password" placeholder="New Password">
 
-        <h3>Update Profile</h3>
+            <button onclick="changePassword()">Update Password</button>
 
-        <input id="newName" placeholder="New Name">
-        <input id="newPhone" placeholder="Phone Number">
-        <input id="newDob" type="date">
-
-        <button class="upload-btn" onclick="updateProfile()">
-            Save Changes
-        </button>
-
-    </div>
-
-
-    <!-- =========================
-         CHANGE PASSWORD SECTION
-    ========================= -->
-
-    <div class="profile-section">
-
-        <h3>Change Password</h3>
-
-        <input id="oldPassword" type="password" placeholder="Old Password">
-        <input id="newPassword" type="password" placeholder="New Password">
-
-        <button class="logout-btn" onclick="changePassword()">
-            Change Password
-        </button>
+        </div>
 
     </div>
 
 </div>
-
-
-<!-- =========================
-     SCRIPT
-========================= -->
 
 <script src="/static/js/profile.js"></script>
 
