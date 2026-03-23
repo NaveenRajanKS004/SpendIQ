@@ -8,64 +8,28 @@
 
 </head>
 
-<body>
+<body class="auth-body">
 
-<!-- =========================
-     AUTH WRAPPER
-========================= -->
+<div class="auth-container">
 
-<div class="auth-wrapper">
+    <img src="/static/assets/logo-primary.svg" class="auth-logo">
 
-    <!-- =========================
-         LEFT PANEL (Branding)
-    ========================= -->
+    <h2>Login</h2>
 
-    <div class="auth-left">
-        <img src="/static/assets/logo-primary.svg" class="auth-logo-large">
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
 
-        <h1>SpendIQ</h1>
+    <button onclick="login()">Login</button>
 
-        <p>
-            Welcome back. Let’s manage your money smarter.
-        </p>
-    </div>
-
-
-    <!-- =========================
-         RIGHT PANEL (Login Form)
-    ========================= -->
-
-    <div class="auth-right">
-
-        <div class="auth-box">
-
-            <h2>Login</h2>
-
-            <!-- User Inputs -->
-            <input id="email" type="email" placeholder="Email">
-            <input id="password" type="password" placeholder="Password">
-
-            <!-- Action -->
-            <button onclick="login()">Login</button>
-
-            <!-- Navigation -->
-            <p>
-                Don’t have an account?
-                <a href="/register-page">Register</a>
-            </p>
-
-        </div>
-
-    </div>
+    <p>
+        Don’t have an account?
+        <a href="/register-page">Register</a>
+    </p>
 
 </div>
-
-
-<!-- =========================
-     SCRIPT
-========================= -->
 
 <script src="/static/js/login.js"></script>
 
 </body>
+
 </html>
