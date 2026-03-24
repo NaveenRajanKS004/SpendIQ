@@ -6,7 +6,6 @@ const API = "http://127.0.0.1:8000"
 
 const token = localStorage.getItem("token")
 
-// Redirect if not logged in
 if (!token) {
     window.location.href = "/login-page"
 }
@@ -40,7 +39,7 @@ function triggerUpload() {
 
 
 // =========================
-// CSV UPLOAD HANDLER
+// CSV UPLOAD
 // =========================
 
 csvUpload.addEventListener("change", async function () {
@@ -53,17 +52,13 @@ csvUpload.addEventListener("change", async function () {
 
     const res = await fetch(`${API}/transactions/upload`, {
         method: "POST",
-        headers: {
-            "Authorization": "Bearer " + token
-        },
+        headers: { "Authorization": "Bearer " + token },
         body: formData
     })
 
     const data = await res.json()
 
     alert(data.message || "Upload complete")
-
-    // Reload dashboard after upload
     loadDashboard()
 })
 
@@ -77,43 +72,72 @@ function initYears() {
     const currentYear = new Date().getFullYear()
 
     for (let y = currentYear; y >= currentYear - 5; y--) {
-
         const option = document.createElement("option")
-
         option.value = y
         option.text = y
-
         yearSelector.appendChild(option)
     }
 }
 
 
 // =========================
-// 🔥 ANIMATED VALUE (NEW)
+// 🔥 SMOOTH ANIMATION (UPGRADED)
 // =========================
 
 function animateValue(id, endValue) {
 
     const el = document.getElementById(id)
-
     if (!el) return
 
-    let start = 0
     const duration = 800
-    const stepTime = 16
+    let startTimestamp = null
 
-    const increment = endValue / (duration / stepTime)
+    const startValue = 0
 
-    const timer = setInterval(() => {
-        start += increment
+    function easeOutQuad(t) {
+        return t * (2 - t)
+    }
 
-        if (start >= endValue) {
-            el.innerText = formatINR(endValue)
-            clearInterval(timer)
+    function step(timestamp) {
+
+        if (!startTimestamp) startTimestamp = timestamp
+
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1)
+        const eased = easeOutQuad(progress)
+
+        const value = Math.floor(eased * endValue)
+
+        el.innerText = formatINR(value)
+
+        if (progress < 1) {
+            requestAnimationFrame(step)
         } else {
-            el.innerText = formatINR(Math.floor(start))
+            el.innerText = formatINR(endValue)
         }
-    }, stepTime)
+    }
+
+    requestAnimationFrame(step)
+}
+
+
+// =========================
+// 🔥 CARD ENTRY ANIMATION
+// =========================
+
+function animateCards() {
+
+    const cards = document.querySelectorAll(".card")
+
+    cards.forEach((card, index) => {
+        card.style.opacity = "0"
+        card.style.transform = "translateY(20px)"
+
+        setTimeout(() => {
+            card.style.transition = "all 0.4s ease"
+            card.style.opacity = "1"
+            card.style.transform = "translateY(0)"
+        }, index * 120)
+    })
 }
 
 
@@ -126,26 +150,23 @@ async function loadYearDashboard(year) {
     const res = await fetch(`${API}/analytics/yearly?year=${year}`, { headers })
     const data = await res.json()
 
-    // Update title
     document.getElementById("dashboardTitle").innerText = `Dashboard — ${year}`
 
-    // 🔥 Animated summary
     animateValue("income", data.income)
     animateValue("expense", data.expense)
     animateValue("balance", data.balance)
 
-    // Charts
     drawBarChart(data)
     drawCategoryChart(data.category_totals)
 
-    // Insights
-    generateInsights(data)
+    generateInsights(data, year, 1)
 
-    // Hide transactions table
     document.getElementById("transactionsSection").style.display = "none"
 
-    // Load subscriptions
     loadSubscriptions()
+
+    // 🔥 trigger animation
+    animateCards()
 }
 
 
@@ -163,37 +184,34 @@ async function loadMonthDashboard(year, month) {
     const data = await res.json()
 
     const monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
+        "January","February","March","April","May","June",
+        "July","August","September","October","November","December"
     ]
 
-    // Update title
     document.getElementById("dashboardTitle").innerText =
         `Dashboard — ${monthNames[month - 1]} ${year}`
 
-    // 🔥 Animated summary
     animateValue("income", data.income)
     animateValue("expense", data.expense)
     animateValue("balance", data.balance)
 
-    // Charts
     drawCategoryChart(data.category_totals)
     drawMonthBarChart(data, month)
 
-    // Insights
-    generateInsights(data)
+    generateInsights(data, year, parseInt(month))
 
-    // Transactions
     renderTransactions(data.transactions)
     document.getElementById("transactionsSection").style.display = "block"
 
-    // Budgets
     await loadBudgets(year, month)
+
+    // 🔥 trigger animation
+    animateCards()
 }
 
 
 // =========================
-// MAIN DASHBOARD LOADER
+// MAIN LOADER
 // =========================
 
 async function loadDashboard() {
@@ -210,7 +228,7 @@ async function loadDashboard() {
 
 
 // =========================
-// EVENT LISTENERS
+// EVENTS
 // =========================
 
 yearSelector.addEventListener("change", loadDashboard)

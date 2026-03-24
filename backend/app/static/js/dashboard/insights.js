@@ -2,7 +2,7 @@
 // GENERATE PREMIUM INSIGHTS
 // =========================
 
-function generateInsights(data) {
+async function generateInsights(data, year, month) {
 
     const container = document.getElementById("insightsList")
     container.innerHTML = ""
@@ -10,47 +10,143 @@ function generateInsights(data) {
     if (!data || !data.category_totals) return
 
     const categories = data.category_totals
+    const entries = Object.entries(categories)
 
-    const topCategory = Object.keys(categories).reduce((a, b) =>
-        categories[a] > categories[b] ? a : b
-    )
+    if (entries.length === 0) return
 
-    const topAmount = categories[topCategory]
+    const sorted = entries.sort((a, b) => b[1] - a[1])
+    const [topCategory, topAmount] = sorted[0]
+
+    const totalExpense = data.expense || 1
+    const topPercent = ((topAmount / totalExpense) * 100).toFixed(1)
 
 
     // =========================
-    // INSIGHTS
+    // CURRENT INSIGHTS
     // =========================
 
     addInsight(
-        `You spent the most on ${topCategory} (${formatINR(topAmount)})`,
+        `${topCategory} dominates your spending at ${topPercent}% (${formatINR(topAmount)})`,
         "info"
     )
 
     if (data.expense > data.income) {
         addInsight(
-            "Your expenses exceeded your income this period",
+            `You are overspending by ${formatINR(data.expense - data.income)}`,
             "danger"
         )
     } else {
         addInsight(
-            "You maintained a positive balance — great job!",
+            `You saved ${formatINR(data.income - data.expense)} this period`,
             "success"
         )
     }
 
-    if (topAmount > data.expense * 0.4) {
+    if (topPercent > 40) {
         addInsight(
-            `${topCategory} takes a large share of your spending. Consider optimizing it.`,
+            `High concentration in ${topCategory}. Consider reducing it`,
             "warning"
         )
     }
 
-    if (Object.keys(categories).length >= 5) {
+    if (entries.length >= 5) {
         addInsight(
-            "Your spending is well distributed across categories",
+            `Spending is diversified across ${entries.length} categories`,
             "info"
         )
+    }
+
+    if (sorted.length > 1) {
+        const [secondCategory, secondAmount] = sorted[1]
+        const secondPercent = ((secondAmount / totalExpense) * 100).toFixed(1)
+
+        addInsight(
+            `${secondCategory} is your second highest expense (${secondPercent}%)`,
+            "info"
+        )
+    }
+
+
+    // =========================
+    // 🔥 MONTH COMPARISON
+    // =========================
+
+    try {
+
+        let prevYear = year
+        let prevMonth = month - 1
+
+        if (prevMonth === 0) {
+            prevMonth = 12
+            prevYear -= 1
+        }
+
+        const res = await fetch(
+            `${API}/analytics/monthly?year=${prevYear}&month=${prevMonth}`,
+            {
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }
+            }
+        )
+
+        if (!res.ok) return
+
+        const prevData = await res.json()
+
+        if (!prevData || !prevData.expense) return
+
+        const diff = data.expense - prevData.expense
+        const percentChange = ((diff / prevData.expense) * 100).toFixed(1)
+
+
+        // =========================
+        // EXPENSE TREND
+        // =========================
+
+        if (diff > 0) {
+            addInsight(
+                `Your spending increased by ${percentChange}% compared to last month`,
+                "danger"
+            )
+        } else {
+            addInsight(
+                `Your spending decreased by ${Math.abs(percentChange)}% — great improvement`,
+                "success"
+            )
+        }
+
+
+        // =========================
+        // CATEGORY SHIFT
+        // =========================
+
+        if (prevData.category_totals) {
+
+            const prevCategories = prevData.category_totals
+
+            if (prevCategories[topCategory]) {
+
+                const prevAmount = prevCategories[topCategory]
+                const change = topAmount - prevAmount
+                const changePercent = ((change / prevAmount) * 100).toFixed(1)
+
+                if (change > 0) {
+                    addInsight(
+                        `${topCategory} spending increased by ${changePercent}%`,
+                        "warning"
+                    )
+                } else {
+                    addInsight(
+                        `${topCategory} spending decreased by ${Math.abs(changePercent)}%`,
+                        "success"
+                    )
+                }
+            }
+        }
+
+    } catch (err) {
+        console.log("Comparison skipped:", err)
     }
 
 }
